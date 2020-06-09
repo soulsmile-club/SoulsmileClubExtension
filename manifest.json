@@ -31,5 +31,11 @@
             },
             "description": "Opens soulsmile.html"
         }
-    }
+    },
+     "content_scripts": [
+       {
+         "matches": ["https://*.amazon.com/*"],
+         "js": ["dialog.js"]
+       }
+     ]
 }
