@@ -1,3 +1,7 @@
+// chrome.runtime.sendMessage({msg: "Sup?"}, function(response) {
+//     console.log(response.returnMsg);
+// });
+
 var modal = document.createElement('div');
 modal.setAttribute('id', 'myModal');
 modal.setAttribute('class', 'modal');
@@ -5,7 +9,7 @@ modal.setAttribute('style', 'display: none; position: absolute; z-index: 1; left
 
 var modalContent = document.createElement('div');
 modalContent.setAttribute('class', 'modal-content');
-modalContent.setAttribute('style', 'border-radius: 10px; text-align: center; background-color: #fefefe; margin: auto; margin-top: 10%; margin-left: 75%; padding: 50px;border: 1px solid #888;width: 80%;')
+modalContent.setAttribute('style', 'border-radius: 10px; text-align: center; background-color: #fefefe; margin: auto; padding: 50px;border: 1px solid #888;width: 80%;')
 
 var closeContent = document.createElement('span');
 closeContent.setAttribute('class', 'close');
@@ -31,29 +35,28 @@ divButtons.appendChild(noButton);
 document.body.appendChild(modal);
 
 noButton.addEventListener("click", function() {
-	modal.style.display = 'none';
+    modal.style.display = 'none';
 })
 yesButton.addEventListener("click", function() {
-	modal.style.display = 'none';
-	chrome.storage.sync.set({isEarning: true}, function() {
-		console.log('This user is earning.');
-	});
-	checkTagForSoulsmile();
+    modal.style.display = 'none';
+    chrome.storage.sync.set({isEarning: true}, function() {
+        console.log('This user is earning.');
+    });
 });
 
 chrome.storage.sync.get('isEarning', function (data) {
-	console.log(data)
-	if (!data.isEarning) {
-		modal.style.display = 'flex';
-	} else {
-		checkTagForSoulsmile();
-	}
+    console.log(data)
+    if (!data.isEarning) {
+        modal.style.display = 'flex';
+    } else {
+        checkTagForSoulsmile();
+    }
 })
 
 function checkTagForSoulsmile() {
-	if (!window.location.href.includes('tag=soulsmileclub-20')) {
-		var url = new URL(window.location.href)
-		url.searchParams.append('tag', 'soulsmileclub-20')
-		window.location.href = url
-	}
+    if (!window.location.href.includes('tag=soulsmileclub-20')) {
+        var url = new URL(window.location.href)
+        url.searchParams.append('tag', 'soulsmileclub-20')
+        window.location.href = url
+    }
 };

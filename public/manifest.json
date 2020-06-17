@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+  "name": "Soulsmile Extension",
+  "description": "This extension is a starting point to create a real Chrome extension",
+  "version": "0.0.1",
+  "browser_action": {
+    "default_icon": {               
+      "16": "soulsmile.png",
+      "24": "soulsmile.png",
+      "32": "soulsmile.png",
+      "128": "soulsmile.png"
+    },
+    "default_title": "Open the popup",
+    "default_popup": "index.html"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [{
+    "matches": ["https://*.amazon.com/*"],
+    "js": ["notifications.js"]
+  }],
+  "icons": {
+    "16": "soulsmile.png",
+    "48": "soulsmile.png",
+    "128": "soulsmile.png"
+  },
+  "content_security_policy": "script-src 'self' 'sha256-ypW0wr1e+CGRr7YiTWwceJUjgoz6vEZ8WUfw8wlh4es='; object-src 'self'",
+  "permissions": ["tabs", "storage"]
+}
