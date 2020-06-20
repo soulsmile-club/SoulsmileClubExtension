@@ -14,13 +14,23 @@ const useStyles = makeStyles({
     border: 0,
     height: 50,
     padding: '0 30px',
-    width: 200
+    width: 200,
+    fontSize: '14px !important',
+    fontFamily: 'Montserrat !important'
+  },
+  label: {
+    fontFamily: 'Montserrat !important',
+    fontSize: '14px !important',
   },
   button: {
     color: '#444444',
+    fontFamily: 'Montserrat !important',
+    fontSize: '14px !important',
   },
   selected: {
-    color: "#eda1aa !important"
+    color: "#eda1aa !important",
+    fontFamily: 'Montserrat',
+    fontSize: '14px !important',
   }
 });
 
@@ -35,9 +45,8 @@ function App() {
   }
   return (
     <>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
     <div className="App">
       {page}
       <BottomNavigation
@@ -48,8 +57,8 @@ function App() {
         showLabels
         className={classes.root}
       >
-        <BottomNavigationAction classes={{root: classes.button, selected: classes.selected}} label="Home" value="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction classes={{root: classes.button, selected: classes.selected}} label="Account" value="Account" icon={<AccountCircleIcon />} />
+        <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} label="Home" value="Home" icon={<HomeIcon />} />
+        <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} label="Account" value="Account" icon={<AccountCircleIcon />} />
       </BottomNavigation>
     </div>
     </>
