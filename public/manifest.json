@@ -19,7 +19,17 @@
   },
   "content_scripts": [{
     "matches": ["https://*.amazon.com/*"],
-    "js": ["notifications.js"]
+    "css": [
+      "boundary/boundary.css",
+      "your-stylesheet-for-boxes.css"
+    ],
+    "js": [
+        "boundary/jquery.js",
+        "boundary/boundary.js",
+        "notifications.js"
+    ],
+    "all_frames": false,
+    "run_at": "document_end"
   }],
   "icons": {
     "16": "soulsmile.png",
@@ -27,5 +37,10 @@
     "128": "soulsmile.png"
   },
   "content_security_policy": "script-src 'self' 'sha256-ypW0wr1e+CGRr7YiTWwceJUjgoz6vEZ8WUfw8wlh4es='; object-src 'self'",
-  "permissions": ["tabs", "storage"]
+  "permissions": ["tabs", "storage"],
+  "web_accessible_resources": [
+    "boundary/boundary-extra.css",
+    "bootstrap.min.css",
+    "your-stylesheet-for-elements-within-boxes.css"
+  ]
 }

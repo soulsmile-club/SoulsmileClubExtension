@@ -6,7 +6,7 @@ function Account() {
         <header className="App-header">
             <h1>Your Account</h1>
             <p>
-                Sneha (Rampalli/Advani).
+                Coming soon.
             </p>
         </header>
     );
