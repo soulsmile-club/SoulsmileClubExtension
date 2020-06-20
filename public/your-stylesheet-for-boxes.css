@@ -5,7 +5,7 @@
 	width: 250px;
 	overflow: auto;
 	height: 300px;
-	z-index: 1;
+	z-index: 10040;
 	background-color: rgba(255, 254, 254);
 	border-radius: 10px;
 	border: 1px solid #444444;

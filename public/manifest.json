@@ -18,7 +18,15 @@
     "persistent": false
   },
   "content_scripts": [{
-    "matches": ["https://*.amazon.com/*"],
+    "matches": [
+      "https://*.amazon.com/*",
+      "https://*.bestbuy.com/*",
+      "https://*.pillowguy.com/*",
+      "https://*.logitech.com/*",
+      "https://*.champion.com/*",
+      "https://*.macys.com/*"
+    ],
+    "exclude_matches": ["*://smile.amazon.com/*"],
     "css": [
       "boundary/boundary.css",
       "your-stylesheet-for-boxes.css"
