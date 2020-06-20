@@ -57,8 +57,8 @@ function App() {
         showLabels
         className={classes.root}
       >
-        <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} label="Home" value="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} label="Account" value="Account" icon={<AccountCircleIcon />} />
+        <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} value="Home" icon={<HomeIcon />} />
+        <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} value="Account" icon={<AccountCircleIcon />} />
       </BottomNavigation>
     </div>
     </>
