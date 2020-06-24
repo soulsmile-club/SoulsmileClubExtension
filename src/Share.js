@@ -9,7 +9,7 @@ function Share() {
     	<>
 	        <div id="soul">Share with Friends</div>
 	        <div id = "message">
-	            Love using Soulsmile and want to do even more good in the world? Share with your friends over email, Facebook, or Twitter!
+	            Love using Soul<span id="smile">smile</span> and want to do even more good in the world? Share with your friends over email, Facebook, or Twitter!
 	        </div>
 	        <div id="shareButtons">
 		        <a href="mailto:?to=&body=I've been using Soulsmile to donate portions of my purchases to charity (without spending any extra)! Join me by trying it out at http://www.soulsmile.club. Thanks! :)&subject=Check out Soulsmile Club!"><MailIcon id="icon" fontSize="large" /></a>

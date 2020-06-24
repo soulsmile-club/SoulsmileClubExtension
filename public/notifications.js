@@ -1,6 +1,10 @@
 $(document).ready(function() {
     var strippedUrl = stripURL(window.location.href);
-    chrome.storage.sync.get(['lastURLInserted' + strippedUrl, 'reload', 'refreshAffiliate'], function (data) {
+    chrome.storage.sync.get(['lastURLInserted' + strippedUrl,
+        'reload',
+        'refreshAffiliate',
+        'noTimestamp' + strippedUrl
+    ], function (data) {
         if (data.reload) {
             chrome.storage.sync.set({reload: false}, function() {
                 redirectToAffiliate();
@@ -15,7 +19,12 @@ $(document).ready(function() {
         }
         console.log("current time: " + Date.now());
         console.log("last inserted timestamp: " + data["lastURLInserted" + strippedUrl]);
-        if (!data["lastURLInserted" + strippedUrl]) {
+        /* 
+        Either yes and 'remind me later' have not been clicked yet, or no has been clicked 
+        and it's been 24 hours - create popup box again.
+        */
+        if (!data["lastURLInserted" + strippedUrl] && !data["noTimestamp" + strippedUrl] 
+            || (data["noTimestamp" + strippedUrl] && Date.now() - data["noTimestamp" + strippedUrl] >= 86400000)) {
             createPermissionNotification();
         } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
             redirectToAffiliate();
@@ -55,6 +64,7 @@ function createPermissionNotification() {
     // /* add some silly interaction to box one */
     Boundary.findElemInBox("#noButton", '#yourBoxOneID').click(function() {
         $('#yourBoxOneID').remove();
+        setNoTimestamp();
     })
 	Boundary.findElemInBox("#yesButton", "#yourBoxOneID").click(function() {
         $('#yourBoxOneID').remove();
@@ -124,6 +134,16 @@ function setURLInsertedTime() {
     });
 }
 
+
+function setNoTimestamp() {
+    var url = new URL(window.location.href);    
+    var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+    var key = "noTimestamp" + strippedUrl;
+    chrome.storage.sync.set({[key]: Date.now()}, function() {
+        console.log("New no timestamp for " + strippedUrl + " is " + Date.now());
+    });
+}
+
 function redirectToAffiliate() {
     if (window.location.href.includes('amazon.com')) {
         addAmazonTagURL();
@@ -142,9 +162,9 @@ function getAffiliateLink(affiliates) {
 }
 
 function addAmazonTagURL() {
-    if (!window.location.href.includes('tag=soulsmileclub-20')) {
+    if (!window.location.href.includes('tag=soulsmilecl09-20')) {
         var url = new URL(window.location.href)
-        url.searchParams.append('tag', 'soulsmileclub-20')
+        url.searchParams.append('tag', 'soulsmilecl09-20')
         window.location.href = url
     }
 };
