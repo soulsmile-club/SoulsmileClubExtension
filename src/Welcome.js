@@ -25,8 +25,7 @@ function Welcome() {
     useEffect(() => {
         chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT},
             function(tabs) {
-                var url = new URL(tabs[0].url);
-                var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+                var strippedUrl = stripURL(tabs[0].url);
                 chrome.storage.sync.get(['lastURLInserted' + strippedUrl], function (data) {
                     checkIfPartnerSite(strippedUrl);
                     if (data["lastURLInserted" + strippedUrl] && (Date.now() - data["lastURLInserted" + strippedUrl] < 86400000)) {
@@ -37,6 +36,13 @@ function Welcome() {
             }
         );
     });
+
+    function stripURL(urlString) {
+        var url = new URL(urlString);
+        var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+        var splitUrl = strippedUrl.split(".");
+        return splitUrl[splitUrl.length-2] + "." + splitUrl[splitUrl.length-1];
+    }
 
     function checkIfPartnerSite(strippedUrl) {
         const url = chrome.runtime.getURL('affiliates.json');
@@ -62,8 +68,7 @@ function Welcome() {
         console.log('activate donations');
         chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT},
             function(tabs) {
-                var url = new URL(tabs[0].url);
-                var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+                var strippedUrl = stripURL(tabs[0].url);
                 var key = "lastURLInserted" + strippedUrl;
                 chrome.storage.sync.set({[key]: Date.now(), reload: true}, function() {
                     console.log("New timestamp for " + strippedUrl + " is " + Date.now());

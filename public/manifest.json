@@ -54,6 +54,7 @@
     "affiliates.json",
     "fonts/*.woff2",
     "fonts/*.woff",
-    "fonts/*.ttf"
+    "fonts/*.ttf",
+    "checkout.json"
   ]
 }
