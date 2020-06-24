@@ -1,13 +1,22 @@
 $(document).ready(function() {
     var url = new URL(window.location.href);
     var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
-    chrome.storage.sync.get(['lastURLInserted' + strippedUrl, 'reload'], function (data) {
+    chrome.storage.sync.get([
+        'lastURLInserted' + strippedUrl, 
+        'reload', 
+        'noTimestamp' + strippedUrl
+    ], function (data) {
         if (data.reload) {
             chrome.storage.sync.set({reload: false}, function() {
                 redirectToAffiliate();
             });
         }
-        if (!data["lastURLInserted" + strippedUrl]) {
+        /* 
+        Either yes and 'remind me later' have not been clicked yet, or no has been clicked 
+        and it's been 24 hours - create popup box again.
+        */
+        if (!data["lastURLInserted" + strippedUrl] && !data["noTimestamp" + strippedUrl] 
+            || (data["noTimestamp" + strippedUrl] && Date.now() - data["noTimestamp" + strippedUrl] >= 86400000)) {
             createBox();
         } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
             redirectToAffiliate();
@@ -42,10 +51,20 @@ function createBox() {
     // /* add some silly interaction to box one */
     Boundary.findElemInBox("#noButton", '#yourBoxOneID').click(function() {
         $('#yourBoxOneID').remove();
+        setNoTimestamp();
     })
 	Boundary.findElemInBox("#yesButton", "#yourBoxOneID").click(function() {
         $('#yourBoxOneID').remove();
         redirectToAffiliate();
+    });
+}
+
+function setNoTimestamp() {
+    var url = new URL(window.location.href);    
+    var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+    var key = "noTimestamp" + strippedUrl;
+    chrome.storage.sync.set({[key]: Date.now()}, function() {
+        console.log("New no timestamp for " + strippedUrl + " is " + Date.now());
     });
 }
 
@@ -54,7 +73,7 @@ function setURLInsertedTime() {
     var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
     var key = "lastURLInserted" + strippedUrl;
     chrome.storage.sync.set({[key]: Date.now()}, function() {
-        console.log("New timestamp for " + strippedUrl + " is " + Date.now());
+        console.log("New url inserted timestamp for " + strippedUrl + " is " + Date.now());
     });
 }
 
@@ -77,9 +96,9 @@ function getAffiliateLink(affiliates) {
 }
 
 function addAmazonTagURL() {
-    if (!window.location.href.includes('tag=soulsmileclub-20')) {
+    if (!window.location.href.includes('tag=soulsmilecl09-20')) {
         var url = new URL(window.location.href)
-        url.searchParams.append('tag', 'soulsmileclub-20')
+        url.searchParams.append('tag', 'soulsmilecl09-20')
         window.location.href = url
     }
 };

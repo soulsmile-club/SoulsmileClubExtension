@@ -79,6 +79,7 @@ function Welcome() {
     var activateButton = (
         <div id='activateButton'>
             <Button id='activate' 
+            // should be deactivated ??
                 disabled={!isPartnerSite || (isPartnerSite && isActivated)}
                 variant='contained' 
                 color='default' 
