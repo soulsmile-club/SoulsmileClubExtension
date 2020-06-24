@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
-  "name": "Soulsmile Extension",
-  "description": "This extension is a starting point to create a real Chrome extension",
+  "name": "Soulsmile Club",
+  "description": "Earn back a portion of your online purchases on select websites and donate it to causes you care about without spending any extra money.",
   "version": "0.0.1",
   "browser_action": {
     "default_icon": {               
@@ -24,7 +24,8 @@
       "https://*.pillowguy.com/*",
       "https://*.logitech.com/*",
       "https://*.champion.com/*",
-      "https://*.macys.com/*"
+      "https://*.macys.com/*",
+      "https://*.girlfriend.com/*"
     ],
     "exclude_matches": ["*://smile.amazon.com/*"],
     "css": [
@@ -49,6 +50,11 @@
   "web_accessible_resources": [
     "boundary/boundary-extra.css",
     "bootstrap.min.css",
-    "your-stylesheet-for-elements-within-boxes.css"
+    "your-stylesheet-for-elements-within-boxes.css",
+    "affiliates.json",
+    "fonts/*.woff2",
+    "fonts/*.woff",
+    "fonts/*.ttf",
+    "checkout.json"
   ]
 }

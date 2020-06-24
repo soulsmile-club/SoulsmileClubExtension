@@ -5,18 +5,22 @@ import { BottomNavigation, BottomNavigationAction } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import HomeIcon from '@material-ui/icons/Home';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import ShareIcon from '@material-ui/icons/Share';
 import Welcome from './Welcome';
 import Account from './Account';
+import Share from './Share';
 
 const useStyles = makeStyles({
   root: {
     background: 'white',
     border: 0,
     height: 50,
-    padding: '0 30px',
-    width: 200,
+    padding: '0 0',
+    width: '100%',
     fontSize: '14px !important',
-    fontFamily: 'Montserrat !important'
+    fontFamily: 'Montserrat !important',
+    position: 'fixed',
+    bottom: 0
   },
   label: {
     fontFamily: 'Montserrat !important',
@@ -40,8 +44,10 @@ function App() {
   let page = null;
   if (value == 'Home') {
     page = <Welcome />;
-  } else {
+  } else if (value == "Account") {
     page = <Account />
+  } else if (value == "Share") {
+    page = <Share />
   }
   return (
     <>
@@ -59,6 +65,7 @@ function App() {
       >
         <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} value="Home" icon={<HomeIcon />} />
         <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} value="Account" icon={<AccountCircleIcon />} />
+        <BottomNavigationAction classes={{root: classes.button, label: classes.label, selected: classes.selected}} value="Share" icon={<ShareIcon />} />
       </BottomNavigation>
     </div>
     </>

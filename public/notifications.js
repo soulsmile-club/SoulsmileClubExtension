@@ -1,14 +1,34 @@
 $(document).ready(function() {
-    chrome.storage.sync.get('isEarning', function (data) {
-        if (!data.isEarning) {
-            createBox();
+    var strippedUrl = stripURL(window.location.href);
+    chrome.storage.sync.get(['lastURLInserted' + strippedUrl, 'reload', 'refreshAffiliate'], function (data) {
+        if (data.reload) {
+            chrome.storage.sync.set({reload: false}, function() {
+                redirectToAffiliate();
+                chrome.storage.sync.set({refreshAffiliate: true}, function() {
+                });
+            });
+        }
+        if (data.refreshAffiliate) {
+            createEarningReminder();
+            chrome.storage.sync.set({refreshAffiliate: false}, function() {
+            });
+        }
+        console.log("current time: " + Date.now());
+        console.log("last inserted timestamp: " + data["lastURLInserted" + strippedUrl]);
+        if (!data["lastURLInserted" + strippedUrl]) {
+            createPermissionNotification();
+        } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
+            redirectToAffiliate();
+            chrome.storage.sync.set({refreshAffiliate: true}, function() {
+            });
         } else {
-            checkTagForSoulsmile();
+            console.log("already earning");
+            checkIfCheckoutPage();
         }
     });
 });
 
-function createBox() {
+function createPermissionNotification() {
     var yourBoxOneID = Boundary.createBox("yourBoxOneID");
     Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('bootstrap.min.css'));
 	Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
@@ -16,7 +36,7 @@ function createBox() {
     Boundary.rewriteBox("#yourBoxOneID", `
     <div class="modal-header">
         <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
+        <span aria-hidden="true">Remind me later</span>
         </button>
     </div>
     `);
@@ -38,19 +58,90 @@ function createBox() {
     })
 	Boundary.findElemInBox("#yesButton", "#yourBoxOneID").click(function() {
         $('#yourBoxOneID').remove();
-        console.log('reached');
-        setIsEarning();
-        checkTagForSoulsmile();
+        redirectToAffiliate();
+        chrome.storage.sync.set({refreshAffiliate: true}, function() {
+        });
     });
 }
 
-function setIsEarning() {
-    chrome.storage.sync.set({isEarning: true}, function() {
-        console.log('This user is earning.');
+function createEarningReminder() {
+    var yourBoxOneID = Boundary.createBox("yourBoxOneID");
+    Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('bootstrap.min.css'));
+    Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    /* modify box one content */
+    Boundary.rewriteBox("#yourBoxOneID", `
+    <div class="modal-header">
+        <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    `);
+    Boundary.appendToBox("#yourBoxOneID", `<div>
+        <h2 id='soulsmile-title'>soul<span id="smile">smile</span> club</h2>
+    </div>
+    `);
+    Boundary.appendToBox("#yourBoxOneID", `
+    <div>
+        <h4 id='earn-soulsmiles'>You are earning soulsmiles for your purchases on this website!</h4>
+    </div>`);
+    Boundary.findElemInBox("#noButton", '#yourBoxOneID').click(function() {
+        $('#yourBoxOneID').remove();
+    })
+}
+
+function stripURL(urlString) {
+    var url = new URL(urlString);
+    var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+    var splitUrl = strippedUrl.split(".");
+    console.log(splitUrl[splitUrl.length-2] + splitUrl[splitUrl.length-1]);
+    return splitUrl[splitUrl.length-2] + "." + splitUrl[splitUrl.length-1];
+}
+
+function checkIfCheckoutPage() {
+    const url = chrome.runtime.getURL('checkout.json');
+    console.log("check against checkouts");
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) => displayCheckoutNotif(json));
+}
+
+function displayCheckoutNotif(checkouts) {
+    console.log("checking checkoutnotif");
+    var urlString = window.location.href;
+    var strippedUrl = stripURL(urlString);
+    console.log(urlString);
+    console.log(checkouts[strippedUrl]);
+    if (urlString.includes(checkouts[strippedUrl])) {
+        createEarningReminder();
+    }
+}
+
+function setURLInsertedTime() {
+    var strippedUrl = stripURL(window.location.href);
+    var key = "lastURLInserted" + strippedUrl;
+    chrome.storage.sync.set({[key]: Date.now()}, function() {
+        console.log("New timestamp for " + strippedUrl + " is " + Date.now());
     });
 }
 
-function checkTagForSoulsmile() {
+function redirectToAffiliate() {
+    if (window.location.href.includes('amazon.com')) {
+        addAmazonTagURL();
+    } else {
+        const url = chrome.runtime.getURL('affiliates.json');
+        fetch(url)
+            .then((response) => response.json())
+            .then((json) => getAffiliateLink(json));
+    }
+    setURLInsertedTime();
+}
+
+function getAffiliateLink(affiliates) {
+    var strippedUrl = stripURL(window.location.href);
+    window.location.href = affiliates[strippedUrl];
+}
+
+function addAmazonTagURL() {
     if (!window.location.href.includes('tag=soulsmileclub-20')) {
         var url = new URL(window.location.href)
         url.searchParams.append('tag', 'soulsmileclub-20')
