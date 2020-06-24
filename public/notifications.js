@@ -1,9 +1,16 @@
 $(document).ready(function() {
-    chrome.storage.sync.get('isEarning', function (data) {
-        if (!data.isEarning) {
+    var url = new URL(window.location.href);
+    var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+    chrome.storage.sync.get(['lastURLInserted' + strippedUrl, 'reload'], function (data) {
+        if (data.reload) {
+            chrome.storage.sync.set({reload: false}, function() {
+                redirectToAffiliate();
+            });
+        }
+        if (!data["lastURLInserted" + strippedUrl]) {
             createBox();
-        } else {
-            checkTagForSoulsmile();
+        } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
+            redirectToAffiliate();
         }
     });
 });
@@ -16,7 +23,7 @@ function createBox() {
     Boundary.rewriteBox("#yourBoxOneID", `
     <div class="modal-header">
         <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
+        <span aria-hidden="true">Remind me later</span>
         </button>
     </div>
     `);
@@ -38,19 +45,38 @@ function createBox() {
     })
 	Boundary.findElemInBox("#yesButton", "#yourBoxOneID").click(function() {
         $('#yourBoxOneID').remove();
-        console.log('reached');
-        setIsEarning();
-        checkTagForSoulsmile();
+        redirectToAffiliate();
     });
 }
 
-function setIsEarning() {
-    chrome.storage.sync.set({isEarning: true}, function() {
-        console.log('This user is earning.');
+function setURLInsertedTime() {
+    var url = new URL(window.location.href);    
+    var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+    var key = "lastURLInserted" + strippedUrl;
+    chrome.storage.sync.set({[key]: Date.now()}, function() {
+        console.log("New timestamp for " + strippedUrl + " is " + Date.now());
     });
 }
 
-function checkTagForSoulsmile() {
+function redirectToAffiliate() {
+    if (window.location.href.includes('amazon.com')) {
+        addAmazonTagURL();
+    } else {
+        const url = chrome.runtime.getURL('affiliates.json');
+        fetch(url)
+            .then((response) => response.json())
+            .then((json) => getAffiliateLink(json));
+    }
+    setURLInsertedTime();
+}
+
+function getAffiliateLink(affiliates) {
+    var url = new URL(window.location.href);
+    var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+    window.location.href = affiliates[strippedUrl];
+}
+
+function addAmazonTagURL() {
     if (!window.location.href.includes('tag=soulsmileclub-20')) {
         var url = new URL(window.location.href)
         url.searchParams.append('tag', 'soulsmileclub-20')

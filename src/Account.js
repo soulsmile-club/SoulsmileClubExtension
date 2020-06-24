@@ -3,12 +3,12 @@ import './App.css';
 
 function Account() {
     return (
-        <header className="App-header">
-            <h1>Your Account</h1>
-            <p>
-                Coming soon.
-            </p>
-        </header>
+    	<>
+	        <div id="soul">Your Account</div>
+	        <div id = "message">
+	            Stay tuned for a future update that will allow you to log in and view your profile here!
+	        </div>
+	    </>
     );
 }
 
