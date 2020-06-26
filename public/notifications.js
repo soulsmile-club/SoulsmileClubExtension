@@ -56,19 +56,16 @@ function createPermissionNotification() {
         <p id='earn-soulsmiles'>Would you like to earn soulsmiles for your purchases?</p>
     </div>`);
     Boundary.appendToBox("#permissionNotification", `
-        <h5>Disclosure:</h5>
-    `);
-    Boundary.appendToBox("#permissionNotification",`
-    <p id="disclosure">
-        As an Amazon Associate and an affiliate of other brands, 
-        Soulsmile Club earns a commission from qualifying purchases. However, instead of 
-        keeping the commission, we donate all of it to causes listed below.
-    </p>
-    `);
-    Boundary.appendToBox("#permissionNotification", `
     <div>
         <button type='button' class='btn btn-secondary' id='yesButton'>Yes, please!</button>
     </div>`);
+    Boundary.appendToBox("#permissionNotification",`
+    <div id="disclosure">
+        <b>Disclosure:</b> As an Amazon Associate and an affiliate of other brands, 
+        Soulsmile Club earns a commission from qualifying purchases. However, instead of 
+        keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+    </div>
+    `);
     Boundary.findElemInBox("#noButton", '#permissionNotification').click(function() {
         $('#permissionNotification').remove();
         setNoTimestamp();
@@ -88,7 +85,7 @@ function createEarningReminder() {
     /* modify box one content */
     Boundary.rewriteBox("#earningsNotification", `
     <div class="modal-header">
-        <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -101,7 +98,7 @@ function createEarningReminder() {
     <div>
         <p id='earn-soulsmiles'>You are earning soulsmiles for your purchases on this website!</p>
     </div>`);
-    Boundary.findElemInBox("#noButton", '#earningsNotification').click(function() {
+    Boundary.findElemInBox("#xButton", '#earningsNotification').click(function() {
         $('#earningsNotification').remove();
     })
 }

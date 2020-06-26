@@ -121,27 +121,21 @@ function Welcome() {
     }
 
     var disclosure = (
-        <div>
-            <h3>Disclosure:</h3>
-            <p id="disclosure">As an Amazon Associate and an affiliate of other brands, 
+        <div id="disclosure">
+            <b>Disclosure:</b> As an Amazon Associate and an affiliate of other brands, 
             Soulsmile Club earns a commission from qualifying purchases. However, instead of 
-            keeping the commission, we donate all of it to causes listed below.</p>
+            keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
         </div>
     );
 
-    var privacyPolicy = (
-        <div>
-            <p id="disclosure">Link to our privacy policy is <a href="https://www.soulsmile.club/blog/privacy-policy" target="_blank" rel="noopener noreferrer"> here</a>.</p>
-        </div>
-    );
+    var nothing;
 
     return (
         <>
         <div id='soul'>soul<span id='smile'>smile</span> club</div>
         {message}
-        {disclosure}
         {isActivated ? checkmark : activateButton}
-        {privacyPolicy}
+        {isActivated || !isPartnerSite ? nothing : disclosure}
         </>
     );
 
