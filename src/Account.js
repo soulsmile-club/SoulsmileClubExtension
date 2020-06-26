@@ -6,7 +6,7 @@ function Account() {
     	<>
 	        <div id="soul">Your Account</div>
 	        <div id = "message">
-	            Stay tuned for a future update that will allow you to log in and view your profile here!
+				Stay tuned for a future update that will allow you to view your Soulsmile wallet and giving history!
 	        </div>
 	    </>
     );

@@ -120,10 +120,20 @@ function Welcome() {
         );
     }
 
+    var disclosure = (
+        <div>
+            <h3>Disclosure:</h3>
+            <p id="disclosure">As an Amazon Associate and an affiliate of other brands, 
+            Soulsmile Club earns a commission from qualifying purchases. However, instead of 
+            keeping the commission, we donate all of it to causes listed below.</p>
+        </div>
+    )
+
     return (
         <>
         <div id='soul'>soul<span id='smile'>smile</span> club</div>
         {message}
+        {disclosure}
         {isActivated ? checkmark : activateButton}
         </>
     );

@@ -8,8 +8,6 @@ $(document).ready(function() {
         if (data.reload) {
             chrome.storage.sync.set({reload: false}, function() {
                 redirectToAffiliate();
-                chrome.storage.sync.set({refreshAffiliate: true}, function() {
-                });
             });
         }
         if (data.refreshAffiliate) {
@@ -38,36 +36,45 @@ $(document).ready(function() {
 });
 
 function createPermissionNotification() {
-    var yourBoxOneID = Boundary.createBox("yourBoxOneID");
-    Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('bootstrap.min.css'));
-	Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    var permissionNotification = Boundary.createBox("permissionNotification");
+    Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('bootstrap.min.css'));
+	Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
 	/* modify box one content */
-    Boundary.rewriteBox("#yourBoxOneID", `
+    Boundary.rewriteBox("#permissionNotification", `
     <div class="modal-header">
         <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">Remind me later</span>
         </button>
     </div>
     `);
-    Boundary.appendToBox("#yourBoxOneID", `<div>
+    Boundary.appendToBox("#permissionNotification", `<div>
         <h2 id='soulsmile-title'>soul<span id="smile">smile</span> club</h2>
     </div>
     `);
-    Boundary.appendToBox("#yourBoxOneID", `
+    Boundary.appendToBox("#permissionNotification", `
     <div>
-        <h4 id='earn-soulsmiles'>Would you like to earn soulsmiles for your purchases?</h4>
+        <p id='earn-soulsmiles'>Would you like to earn soulsmiles for your purchases?</p>
     </div>`);
-    Boundary.appendToBox("#yourBoxOneID", `
+    Boundary.appendToBox("#permissionNotification", `
+        <h5>Disclosure:</h5>
+    `);
+    Boundary.appendToBox("#permissionNotification",`
+    <p id="disclosure">
+        As an Amazon Associate and an affiliate of other brands, 
+        Soulsmile Club earns a commission from qualifying purchases. However, instead of 
+        keeping the commission, we donate all of it to causes listed below.
+    </p>
+    `);
+    Boundary.appendToBox("#permissionNotification", `
     <div>
         <button type='button' class='btn btn-secondary' id='yesButton'>Yes, please!</button>
     </div>`);
-    // /* add some silly interaction to box one */
-    Boundary.findElemInBox("#noButton", '#yourBoxOneID').click(function() {
-        $('#yourBoxOneID').remove();
+    Boundary.findElemInBox("#noButton", '#permissionNotification').click(function() {
+        $('#permissionNotification').remove();
         setNoTimestamp();
     })
-	Boundary.findElemInBox("#yesButton", "#yourBoxOneID").click(function() {
-        $('#yourBoxOneID').remove();
+	Boundary.findElemInBox("#yesButton", "#permissionNotification").click(function() {
+        $('#permissionNotification').remove();
         redirectToAffiliate();
         chrome.storage.sync.set({refreshAffiliate: true}, function() {
         });
@@ -75,27 +82,27 @@ function createPermissionNotification() {
 }
 
 function createEarningReminder() {
-    var yourBoxOneID = Boundary.createBox("yourBoxOneID");
-    Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('bootstrap.min.css'));
-    Boundary.loadBoxCSS("#yourBoxOneID", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    var earningsNotification = Boundary.createBox("earningsNotification");
+    Boundary.loadBoxCSS("#earningsNotification", chrome.extension.getURL('bootstrap.min.css'));
+    Boundary.loadBoxCSS("#earningsNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
     /* modify box one content */
-    Boundary.rewriteBox("#yourBoxOneID", `
+    Boundary.rewriteBox("#earningsNotification", `
     <div class="modal-header">
         <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
     </div>
     `);
-    Boundary.appendToBox("#yourBoxOneID", `<div>
-        <h2 id='soulsmile-title'>soul<span id="smile">smile</span> club</h2>
+    Boundary.appendToBox("#earningsNotification", `<div id='soulsmile-title'>
+        <h2>soul<span id="smile">smile</span> club</h2>
     </div>
     `);
-    Boundary.appendToBox("#yourBoxOneID", `
+    Boundary.appendToBox("#earningsNotification", `
     <div>
-        <h4 id='earn-soulsmiles'>You are earning soulsmiles for your purchases on this website!</h4>
+        <p id='earn-soulsmiles'>You are earning soulsmiles for your purchases on this website!</p>
     </div>`);
-    Boundary.findElemInBox("#noButton", '#yourBoxOneID').click(function() {
-        $('#yourBoxOneID').remove();
+    Boundary.findElemInBox("#noButton", '#earningsNotification').click(function() {
+        $('#earningsNotification').remove();
     })
 }
 
