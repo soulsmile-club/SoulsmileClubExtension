@@ -1,22 +1,14 @@
 $(document).ready(function() {
     var strippedUrl = stripURL(window.location.href);
     chrome.storage.sync.get(['lastURLInserted' + strippedUrl,
-        'reload',
         'refreshAffiliate',
         'noTimestamp' + strippedUrl
     ], function (data) {
-        if (data.reload) {
-            chrome.storage.sync.set({reload: false}, function() {
-                redirectToAffiliate();
-            });
-        }
         if (data.refreshAffiliate) {
             createEarningReminder();
             chrome.storage.sync.set({refreshAffiliate: false}, function() {
             });
         }
-        console.log("current time: " + Date.now());
-        console.log("last inserted timestamp: " + data["lastURLInserted" + strippedUrl]);
         /* 
         Either yes and 'remind me later' have not been clicked yet, or no has been clicked 
         and it's been 24 hours - create popup box again.
@@ -85,7 +77,7 @@ function createEarningReminder() {
     /* modify box one content */
     Boundary.rewriteBox("#earningsNotification", `
     <div class="modal-header">
-        <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -98,7 +90,7 @@ function createEarningReminder() {
     <div>
         <p id='earn-soulsmiles'>You are earning soulsmiles for your purchases on this website!</p>
     </div>`);
-    Boundary.findElemInBox("#noButton", '#earningsNotification').click(function() {
+    Boundary.findElemInBox("#xButton", '#earningsNotification').click(function() {
         $('#earningsNotification').remove();
     })
 }
@@ -123,8 +115,6 @@ function displayCheckoutNotif(checkouts) {
     console.log("checking checkoutnotif");
     var urlString = window.location.href;
     var strippedUrl = stripURL(urlString);
-    console.log(urlString);
-    console.log(checkouts[strippedUrl]);
     if (urlString.includes(checkouts[strippedUrl])) {
         createEarningReminder();
     }
@@ -166,9 +156,15 @@ function getAffiliateLink(affiliates) {
 }
 
 function addAmazonTagURL() {
-    if (!window.location.href.includes('tag=soulsmilecl09-20')) {
+    if (!window.location.href.includes('tag=soulsmilecl09-20')
+        && !window.location.href.includes('tag=soulsmileclubblm-20')
+        && !window.location.href.includes('tag=soulsmileclubcovid-20')
+        && !window.location.href.includes('tag=soulsmileclubswe-20')) {
         var url = new URL(window.location.href)
         url.searchParams.append('tag', 'soulsmilecl09-20')
         window.location.href = url
+    } else {
+        window.location.href = window.location.href;
+        console.log('Page reloaded');
     }
 };

@@ -56,6 +56,11 @@ div {
 	font-weight: 400;
 }
 
+#xButton {
+	font-size: 25px;
+	font-weight: 400;
+}
+
 #disclosure {
   padding: 50px 10px 0px 10px;
   font-size: 8px;

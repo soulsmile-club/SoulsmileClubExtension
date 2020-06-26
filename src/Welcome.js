@@ -68,17 +68,44 @@ function Welcome() {
         console.log('activate donations');
         chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT},
             function(tabs) {
+                var url = tabs[0].url;
+                var id = tabs[0].id;
                 var strippedUrl = stripURL(tabs[0].url);
                 var key = "lastURLInserted" + strippedUrl;
-                chrome.storage.sync.set({[key]: Date.now(), reload: true}, function() {
+                chrome.storage.sync.set({[key]: Date.now()}, function() {
                     console.log("New timestamp for " + strippedUrl + " is " + Date.now());
                     setIsActivated(true);
-                    chrome.tabs.reload(function() {
-                        console.log('reloaded');
-                    });
+                    if (url.includes('amazon.com')) {
+                        addAmazonTagURL(url, id);
+                    } else {
+                        const affiliatesURL = chrome.runtime.getURL('affiliates.json');
+                        fetch(affiliatesURL)
+                            .then((response) => response.json())
+                            .then((json) => getAffiliateLink(url, id, json));
+                    }
                 });
             }
         );
+    }
+
+    function addAmazonTagURL(url, tabId) {
+        if (!url.includes('tag=soulsmilecl09-20') 
+            && !url.includes('tag=soulsmileclubblm-20')
+            && !url.includes('tag=soulsmileclubcovid-20')
+            && !url.includes('tag=soulsmileclubswe-20')) {
+            var newURL = new URL(url)
+            newURL.searchParams.append('tag', 'soulsmilecl09-20')
+            chrome.tabs.update(tabId, {url: newURL.toString()});
+        } else {
+            chrome.tabs.reload(function (data) {
+                console.log("Page reload for adding amazon tag");
+            })
+        }
+    }
+
+    function getAffiliateLink(url, tabId, affiliates) {
+        var strippedUrl = stripURL(url);
+        chrome.tabs.update(tabId, {url: affiliates[strippedUrl].toString()});
     }
 
     var activateButton = (
