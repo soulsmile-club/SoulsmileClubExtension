@@ -8,8 +8,6 @@ $(document).ready(function() {
         if (data.reload) {
             chrome.storage.sync.set({reload: false}, function() {
                 redirectToAffiliate();
-                chrome.storage.sync.set({refreshAffiliate: true}, function() {
-                });
             });
         }
         if (data.refreshAffiliate) {
