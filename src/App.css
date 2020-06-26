@@ -22,11 +22,7 @@
 }
 
 #activateButton {
-  padding: 10px 10px 0px 10px;
-}
-
-#deactivateButton {
-  padding: 10px 10px 0px 10px;
+  padding: 20px 10px 10px 10px;
 }
 
 #smile {
@@ -34,12 +30,18 @@
 }
 
 #message {
-  font-size: 15px;
-  padding: 15px 10px 10px 10px;
+  font-size: 18px;
+  padding: 30px 15px 30px 15px;
 }
 
 #disclosure {
-  padding: 0px 10px 10px 10px;
+  padding: 50px 10px 0px 10px;
+  font-size: 8px;
+}
+
+#learnMore {
+  padding: 20px 10px 0px 10px;
+  font-size: 10px;
 }
 
 .App-logo {
@@ -51,12 +53,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 15px 10px 0px 10px;
+  padding: 0px 10px 0px 10px;
 }
 
 #icon {
   color: #eda1aa;
-  padding: 8px;
+  padding: 9px;
 }
 
 #icon:hover {
@@ -110,7 +112,7 @@
   stroke-width: 2;
   stroke: #fff;
   stroke-miterlimit: 10;
-  margin: 15px 10px 0px 10px;
+  margin: 20px 10px 0px 10px;
   box-shadow: inset 0px 0px 0px #7ac142;
   animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
 }

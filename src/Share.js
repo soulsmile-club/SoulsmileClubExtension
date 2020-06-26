@@ -24,11 +24,11 @@ function Share() {
     	<>
 	        <div id="soul">Share with Friends</div>
 	        <div id = "message">
-	            Love using Soul<span id="smile">smile</span> and want to do even more good in the world? Share with your friends over email, Facebook, or Twitter!
+	            Love using Soulsmile and want to do even more good in the world? Share with your friends to increase your impact!
 	        </div>
 	        <div id="shareButtons">
-		        <a href="mailto:?to=&body=I've been using Soulsmile to donate portions of my purchases to charity (without spending any extra)! Join me by trying it out at http://www.soulsmile.club. Thanks! :)&subject=Check out Soulsmile Club!"><MailIcon id="icon" fontSize="large" /></a>
-		        <a rel="noopener noreferrer" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.soulsmile.club%2F&amp;src=sdkpreparse" ><FacebookIcon id="icon" fontSize="large" /></a>
+		        <a href="mailto:?to=&body=I've been using Soulsmile to donate portions of my purchases to charity (without spending any extra)! Join me by downloading the extension at http://tiny.cc/soulsmile-extension, or learn more at http://www.soulsmile.club. Thanks! :)&subject=Check out Soulsmile Club!"><MailIcon id="icon" fontSize="large" /></a>
+		        <a rel="noopener noreferrer" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Fsoulsmile-club%2Fiikdmahefbhmbconbhnfenejbdilchda%3Fhl%3Den&amp;src=sdkpreparse" ><FacebookIcon id="icon" fontSize="large" /></a>
 		    	<a rel="noopener noreferrer" target="_blank" href="https://twitter.com/share?ref_src=twsrc%5Etfw"><TwitterIcon id="icon" fontSize="large" /></a>
 				
 				{/* Change link once publicly listed. */}
@@ -37,6 +37,11 @@ function Share() {
 						<LinkIcon id="icon" fontSize="large" />	
 					</a>
 				</Tooltip>
+	    	</div>
+	    	<div id="learnMore">
+	    		<div>Learn more: <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">www.soulsmile.club</a></div>
+	    		<div>Give us feedback: <a href="https://tiny.cc/soulsmile-feedback" target="_blank" rel="noopener noreferrer">tiny.cc/soulsmile-feedback</a></div>
+	    		<div><a href="https://www.soulsmile.club/blog/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></div>
 	    	</div>
 	    </>
     );
