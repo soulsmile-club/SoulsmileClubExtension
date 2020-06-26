@@ -4,7 +4,7 @@
   text-align: center;
   font-family: 'Montserrat', sans-serif;
   width: 300px;
-  height: 375px;
+  height: 410px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,11 +22,11 @@
 }
 
 #activateButton {
-  padding: 15px 10px 0px 10px;
+  padding: 10px 10px 0px 10px;
 }
 
 #deactivateButton {
-  padding: 15px 10px 0px 10px;
+  padding: 10px 10px 0px 10px;
 }
 
 #smile {
@@ -35,7 +35,11 @@
 
 #message {
   font-size: 15px;
-  padding: 0px 15px 15px 15px;
+  padding: 15px 10px 10px 10px;
+}
+
+#disclosure {
+  padding: 0px 10px 10px 10px;
 }
 
 .App-logo {
