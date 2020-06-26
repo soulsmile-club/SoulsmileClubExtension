@@ -108,7 +108,7 @@ function Welcome() {
     var message;
     if (!isPartnerSite) {
         message = (
-            <div id ="message">Sorry, this site is not one of our partner sites! See all of our partners <a href="http://www.soulsmile.club" target="_blank" rel="noopener noreferrer">here</a>.</div>
+            <div id ="message">Sorry, this site is not one of our partner sites! See all of our partners <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">here</a>.</div>
         );
     } else if (isActivated) {
         message = (
@@ -127,7 +127,13 @@ function Welcome() {
             Soulsmile Club earns a commission from qualifying purchases. However, instead of 
             keeping the commission, we donate all of it to causes listed below.</p>
         </div>
-    )
+    );
+
+    var privacyPolicy = (
+        <div>
+            <p id="disclosure">Link to our privacy policy is <a href="https://www.soulsmile.club/blog/privacy-policy" target="_blank" rel="noopener noreferrer"> here</a>.</p>
+        </div>
+    );
 
     return (
         <>
@@ -135,6 +141,7 @@ function Welcome() {
         {message}
         {disclosure}
         {isActivated ? checkmark : activateButton}
+        {privacyPolicy}
         </>
     );
 
