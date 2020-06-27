@@ -4,23 +4,30 @@ $(document).ready(function() {
         'refreshAffiliate',
         'noTimestamp' + strippedUrl
     ], function (data) {
+        // User clicks yes to earn soulsmiles
         if (data.refreshAffiliate) {
-            createEarningReminder();
             chrome.storage.sync.set({refreshAffiliate: false}, function() {
+                createEarningReminder();
             });
         }
-        /* 
-        Either yes and 'remind me later' have not been clicked yet, or no has been clicked 
-        and it's been 24 hours - create popup box again.
-        */
-        if (!data["lastURLInserted" + strippedUrl] && !data["noTimestamp" + strippedUrl] 
-            || (data["noTimestamp" + strippedUrl] && Date.now() - data["noTimestamp" + strippedUrl] >= 86400000)) {
-            createPermissionNotification();
+        if (!data["lastURLInserted" + strippedUrl]) {
+            // User has never started earning soulsmiles on this site before
+            if (!data["noTimestamp" + strippedUrl]) {
+                // User has never clicked remind me later
+                createPermissionNotification();
+            } else if (Date.now() - data["noTimestamp" + strippedUrl] >= 86400000) {
+                // User has clicked remind me later and they need to be asked again
+                createPermissionNotification();
+            } else {
+                // User has clicked remind me later but it hasn't been 24 hours yet -- do nothing
+            }
         } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
-            redirectToAffiliate();
+            // User is earning soulsmiles on this site but needs to be refreshed
             chrome.storage.sync.set({refreshAffiliate: true}, function() {
+                redirectToAffiliate();
             });
         } else {
+            // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
             console.log("already earning");
             checkIfCheckoutPage();
         }
@@ -31,7 +38,6 @@ function createPermissionNotification() {
     var permissionNotification = Boundary.createBox("permissionNotification");
     Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('bootstrap.min.css'));
 	Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
-	/* modify box one content */
     Boundary.rewriteBox("#permissionNotification", `
     <div class="modal-header">
         <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
@@ -64,8 +70,8 @@ function createPermissionNotification() {
     })
 	Boundary.findElemInBox("#yesButton", "#permissionNotification").click(function() {
         $('#permissionNotification').remove();
-        redirectToAffiliate();
         chrome.storage.sync.set({refreshAffiliate: true}, function() {
+            redirectToAffiliate();
         });
     });
 }
@@ -74,7 +80,6 @@ function createEarningReminder() {
     var earningsNotification = Boundary.createBox("earningsNotification");
     Boundary.loadBoxCSS("#earningsNotification", chrome.extension.getURL('bootstrap.min.css'));
     Boundary.loadBoxCSS("#earningsNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
-    /* modify box one content */
     Boundary.rewriteBox("#earningsNotification", `
     <div class="modal-header">
         <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">
@@ -120,15 +125,6 @@ function displayCheckoutNotif(checkouts) {
     }
 }
 
-function setURLInsertedTime() {
-    var strippedUrl = stripURL(window.location.href);
-    var key = "lastURLInserted" + strippedUrl;
-    chrome.storage.sync.set({[key]: Date.now()}, function() {
-        console.log("New timestamp for " + strippedUrl + " is " + Date.now());
-    });
-}
-
-
 function setNoTimestamp() {
     var url = new URL(window.location.href);    
     var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
@@ -139,15 +135,19 @@ function setNoTimestamp() {
 }
 
 function redirectToAffiliate() {
-    if (window.location.href.includes('amazon.com')) {
-        addAmazonTagURL();
-    } else {
-        const url = chrome.runtime.getURL('affiliates.json');
-        fetch(url)
-            .then((response) => response.json())
-            .then((json) => getAffiliateLink(json));
-    }
-    setURLInsertedTime();
+    var strippedUrl = stripURL(window.location.href);
+    var key = "lastURLInserted" + strippedUrl;
+    chrome.storage.sync.set({[key]: Date.now()}, function() {
+        console.log("New timestamp for " + strippedUrl + " is " + Date.now());
+        if (window.location.href.includes('amazon.com')) {
+            addAmazonTagURL();
+        } else {
+            const url = chrome.runtime.getURL('affiliates.json');
+            fetch(url)
+                .then((response) => response.json())
+                .then((json) => getAffiliateLink(json));
+        }
+    });
 }
 
 function getAffiliateLink(affiliates) {
