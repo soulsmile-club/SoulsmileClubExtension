@@ -4,7 +4,7 @@ $(document).ready(function() {
         'refreshAffiliate',
         'noTimestamp' + strippedUrl
     ], function (data) {
-        // User clicks yes to earn soulsmiles
+        // User is earning soulsmiles
         if (data.refreshAffiliate) {
             chrome.storage.sync.set({refreshAffiliate: false}, function() {
                 createEarningReminder();
