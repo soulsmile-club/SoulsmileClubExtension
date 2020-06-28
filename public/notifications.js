@@ -4,6 +4,7 @@ $(document).ready(function() {
         'refreshAffiliate',
         'noTimestamp' + strippedUrl
     ], function (data) {
+        // User is earning soulsmiles
         if (data.refreshAffiliate) {
             chrome.storage.sync.set({refreshAffiliate: false}, function() {
                 createEarningReminder();
@@ -14,13 +15,13 @@ $(document).ready(function() {
             if (!data["noTimestamp" + strippedUrl]) {
                 // User has never clicked remind me later
                 createPermissionNotification();
-            } else if (Date.now() - data["noTimestamp" + strippedUrl] >= 30000) {
+            } else if (Date.now() - data["noTimestamp" + strippedUrl] >= 86400000) {
                 // User has clicked remind me later and they need to be asked again
                 createPermissionNotification();
             } else {
                 // User has clicked remind me later but it hasn't been 24 hours yet -- do nothing
             }
-        } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 30000) {
+        } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
             // User is earning soulsmiles on this site but needs to be refreshed
             chrome.storage.sync.set({refreshAffiliate: true}, function() {
                 redirectToAffiliate();
@@ -37,7 +38,6 @@ function createPermissionNotification() {
     var permissionNotification = Boundary.createBox("permissionNotification");
     Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('bootstrap.min.css'));
 	Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
-	/* modify box one content */
     Boundary.rewriteBox("#permissionNotification", `
     <div class="modal-header">
         <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
@@ -80,7 +80,6 @@ function createEarningReminder() {
     var earningsNotification = Boundary.createBox("earningsNotification");
     Boundary.loadBoxCSS("#earningsNotification", chrome.extension.getURL('bootstrap.min.css'));
     Boundary.loadBoxCSS("#earningsNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
-    /* modify box one content */
     Boundary.rewriteBox("#earningsNotification", `
     <div class="modal-header">
         <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">

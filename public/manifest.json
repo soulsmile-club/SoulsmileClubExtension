@@ -2,13 +2,12 @@
   "manifest_version": 2,
   "name": "Soulsmile Club",
   "description": "Earn back a portion of your online purchases on select websites and donate it to causes you care about without spending any extra.",
-  "version": "0.0.0.1",
+  "version": "0.0.0.2",
   "browser_action": {
     "default_icon": {               
-      "16": "soulsmile.png",
-      "24": "soulsmile.png",
-      "32": "soulsmile.png",
-      "128": "soulsmile.png"
+      "16": "soulsmile-16.png",
+      "24": "soulsmile-24.png",
+      "32": "soulsmile-32.png"
     },
     "default_title": "Open the popup",
     "default_popup": "index.html"
@@ -41,9 +40,9 @@
     "run_at": "document_end"
   }],
   "icons": {
-    "16": "soulsmile.png",
-    "48": "soulsmile.png",
-    "128": "soulsmile.png"
+    "16": "soulsmile-16.png",
+    "48": "soulsmile-48.png",
+    "128": "soulsmile-128.png"
   },
   "content_security_policy": "script-src 'self' 'sha256-ypW0wr1e+CGRr7YiTWwceJUjgoz6vEZ8WUfw8wlh4es='; object-src 'self'",
   "permissions": ["tabs", "storage"],
