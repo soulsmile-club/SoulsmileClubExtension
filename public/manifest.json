@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Soulsmile Club",
   "description": "Earn back a portion of your online purchases on select websites and donate it to causes you care about without spending any extra.",
-  "version": "0.0.0.2",
+  "version": "0.0.0.3",
   "browser_action": {
     "default_icon": {               
       "16": "soulsmile-16.png",
