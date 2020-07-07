@@ -37,7 +37,7 @@
         "notifications.js"
     ],
     "all_frames": false,
-    "run_at": "document_end"
+    "run_at": "document_idle"
   }],
   "icons": {
     "16": "soulsmile-16.png",

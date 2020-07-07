@@ -45,5 +45,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "jsdom": "16.2.2",
+    "jsdom-global": "3.0.2"
   }
 }

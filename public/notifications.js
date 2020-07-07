@@ -1,37 +1,39 @@
-$(document).ready(function() {
-    var strippedUrl = stripURL(window.location.href);
-    chrome.storage.sync.get(['lastURLInserted' + strippedUrl,
-        'refreshAffiliate',
-        'noTimestamp' + strippedUrl
-    ], function (data) {
-        // User is earning soulsmiles
-        if (data.refreshAffiliate) {
-            chrome.storage.sync.set({refreshAffiliate: false}, function() {
-                createEarningReminder();
-            });
-        }
-        if (!data["lastURLInserted" + strippedUrl]) {
-            // User has never started earning soulsmiles on this site before
-            if (!data["noTimestamp" + strippedUrl]) {
-                // User has never clicked remind me later
-                createPermissionNotification();
-            } else if (Date.now() - data["noTimestamp" + strippedUrl] >= 86400000) {
-                // User has clicked remind me later and they need to be asked again
-                createPermissionNotification();
-            } else {
-                // User has clicked remind me later but it hasn't been 24 hours yet -- do nothing
-            }
-        } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
-            // User is earning soulsmiles on this site but needs to be refreshed
-            chrome.storage.sync.set({refreshAffiliate: true}, function() {
-                redirectToAffiliate();
-            });
+/*
+    - Whenever we add retailers, add to affiliates.json & checkout.json.
+*/
+
+var strippedUrl = stripURL(window.location.href);
+chrome.storage.sync.get(['lastURLInserted' + strippedUrl,
+    'refreshAffiliate',
+    'noTimestamp' + strippedUrl
+], function (data) {
+    // User is earning soulsmiles
+    if (data.refreshAffiliate) {
+        chrome.storage.sync.set({refreshAffiliate: false}, function() {
+            createEarningReminder();
+        });
+    }
+    if (!data["lastURLInserted" + strippedUrl]) {
+        // User has never started earning soulsmiles on this site before
+        if (!data["noTimestamp" + strippedUrl]) {
+            // User has never clicked remind me later
+            createPermissionNotification();
+        } else if (Date.now() - data["noTimestamp" + strippedUrl] >= 86400000) {
+            // User has clicked remind me later and they need to be asked again
+            createPermissionNotification();
         } else {
-            // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
-            console.log("already earning");
-            checkIfCheckoutPage();
+            // User has clicked remind me later but it hasn't been 24 hours yet -- do nothing
         }
-    });
+    } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
+        // User is earning soulsmiles on this site but needs to be refreshed
+        chrome.storage.sync.set({refreshAffiliate: true}, function() {
+            redirectToAffiliate();
+        });
+    } else {
+        // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
+        console.log("already earning");
+        checkIfCheckoutPage();
+    }
 });
 
 function createPermissionNotification() {
@@ -168,3 +170,7 @@ function addAmazonTagURL() {
         console.log('Page reloaded');
     }
 };
+
+exports._test = {
+    stripURL: stripURL
+}
