@@ -1,6 +1,8 @@
 $(document).ready(function() {
+    console.log("document is ready");
     // get current URL domain name
     var strippedUrl = stripURL(window.location.href);
+    console.log("current URL: " + strippedUrl);
 
     // get lastURLInserted (timestamp of last time user was redirected to affiliate on this site),
     // refreshAffiliate (whether we need to put earning notification right now),
@@ -16,7 +18,6 @@ $(document).ready(function() {
                 createEarningReminder();
             });
         }
-
 
         if (!data["lastURLInserted" + strippedUrl]) {
             // User has never started earning soulsmiles on this site before
@@ -123,6 +124,13 @@ function createEarningReminder() {
     <div>
         <p id='earn-soulsmiles'>You are earning soulsmiles for your purchases on this website!</p>
     </div>`);
+    Boundary.appendToBox("#earningsNotification",`
+    <div id="earningsDisclosure">
+        <b>Disclosure:</b> In order to earn soulsmiles, you are now shopping through our affiliate link for this retailer. As an Amazon Associate and an affiliate of other brands, 
+        Soulsmile Club earns a commission from qualifying purchases. However, instead of 
+        keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+    </div>
+    `);
 
     // add button functionality
     Boundary.findElemInBox("#xButton", '#earningsNotification').click(function() {

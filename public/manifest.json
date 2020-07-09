@@ -24,9 +24,9 @@
       "https://*.logitech.com/*",
       "https://*.champion.com/*",
       "https://*.macys.com/*",
-      "https://*.girlfriend.com/*"
+      "https://*.girlfriend.com/*",
+      "https://*.earthhero.com/*"
     ],
-    "exclude_matches": ["*://smile.amazon.com/*"],
     "css": [
       "boundary/boundary.css",
       "your-stylesheet-for-boxes.css"

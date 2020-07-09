@@ -221,7 +221,7 @@ function Welcome() {
         <div id='soul'>soul<span id='smile'>smile</span> club</div>
         {message}
         {isActivated ? checkmark : activateButton}
-        {isActivated || !isPartnerSite ? nothing : disclosure}
+        {isPartnerSite ? disclosure : nothing}
         </>
     );
 
