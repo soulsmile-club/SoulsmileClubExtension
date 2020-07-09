@@ -10,6 +10,7 @@ import Welcome from './Welcome';
 import Account from './Account';
 import Share from './Share';
 
+// CSS for BottomNavigation item
 const useStyles = makeStyles({
   root: {
     background: 'white',
@@ -38,9 +39,15 @@ const useStyles = makeStyles({
   }
 });
 
+/*
+ * Main controller page containing BottomNavigation bar and page to be displayed
+*/
 function App() {
+  // value corresponds to the currently selected tab in BottomNavigation bar
   const [value, setValue] = React.useState('Home');
   const classes = useStyles();
+
+  // page contains the React element we would like to display based on the currently selected tab from the navigation bar
   let page = null;
   if (value == 'Home') {
     page = <Welcome />;

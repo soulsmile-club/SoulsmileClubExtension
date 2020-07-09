@@ -1,6 +1,10 @@
 import React from 'react';
 import './App.css';
 
+/*
+ * Account page to register/login and show Soulsmile account, wallet, giving history, and ability to allocate soulsmiles
+ * TODO: Add login and account functionality
+*/
 function Account() {
     return (
     	<>

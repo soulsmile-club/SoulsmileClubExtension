@@ -6,10 +6,17 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 import LinkIcon from '@material-ui/icons/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 
+/*
+ * Share page to allow user to share Soulsmile on social media, email, or copy/paste link
+*/
 function Share() {
 
+	// value for text that should appear when hovering over copy text
 	const [copied, setCopied] = React.useState('Copy link to clipboard.');
 
+	/*
+	 * Sets event listener to copy chrome extension link to clipboard and change copy text when copy button is clicked
+	*/
 	function copyToClipboard() {
 		var url = document.getElementById("copyLink").href;
 		document.addEventListener("copy", function(e) {
