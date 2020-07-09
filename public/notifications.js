@@ -78,7 +78,7 @@ function createPermissionNotification() {
     Boundary.appendToBox("#permissionNotification",`
     <div id="disclosure">
         <b>Disclosure:</b> As an Amazon Associate and an affiliate of other brands, 
-        Soulsmile Club earns a commission from qualifying purchases. However, instead of 
+        Soulsmile Club earns a commission from qualifying purchases. By clicking "Yes" above, you are giving us your consent to automatically direct you to our affiliate links. However, instead of 
         keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
     </div>
     `);
@@ -127,7 +127,7 @@ function createEarningReminder() {
     Boundary.appendToBox("#earningsNotification",`
     <div id="earningsDisclosure">
         <b>Disclosure:</b> In order to earn soulsmiles, you are now shopping through our affiliate link for this retailer. As an Amazon Associate and an affiliate of other brands, 
-        Soulsmile Club earns a commission from qualifying purchases. However, instead of 
+        Soulsmile Club earns commission from qualifying purchases. However, instead of 
         keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
     </div>
     `);
