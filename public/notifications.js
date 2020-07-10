@@ -77,8 +77,7 @@ function createPermissionNotification() {
     </div>`);
     Boundary.appendToBox("#permissionNotification",`
     <div id="disclosure">
-        <b>Disclosure:</b> As an Amazon Associate and an affiliate of other brands, 
-        Soulsmile Club earns a commission from qualifying purchases. By clicking "Yes" above, you are giving us your consent to automatically direct you to our affiliate links. However, instead of 
+        <b>Disclosure:</b> By clicking "Yes" above, you are giving us your consent to automatically direct you to our affiliate links. However, instead of 
         keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
     </div>
     `);
@@ -126,9 +125,8 @@ function createEarningReminder() {
     </div>`);
     Boundary.appendToBox("#earningsNotification",`
     <div id="earningsDisclosure">
-        <b>Disclosure:</b> In order to earn soulsmiles, you are now shopping through our affiliate link for this retailer. As an Amazon Associate and an affiliate of other brands, 
-        Soulsmile Club earns commission from qualifying purchases. However, instead of 
-        keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+        <b>Disclosure:</b> In order to earn soulsmiles, you are now shopping through our affiliate link for this retailer. 
+        However, instead of keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
     </div>
     `);
 
@@ -139,7 +137,7 @@ function createEarningReminder() {
 }
 
 /*
- * Strips full-length URL to just domain name, with no http, www, or parameters (e.g. just amazon.com)
+ * Strips full-length URL to just domain name, with no http, www, or parameters (e.g. just girlfriend.com)
  * @param urlString: string containing full URL of current website
  * @return: string of stripped URL
 */
@@ -199,19 +197,12 @@ function redirectToAffiliate() {
     var key = "lastURLInserted" + strippedUrl;
     chrome.storage.sync.set({[key]: Date.now()}, function() {
         console.log("New timestamp for " + strippedUrl + " is " + Date.now());
-
-        // check if current site is amazon
-        if (window.location.href.includes('amazon.com')) {
-            // amazon must simply insert the tag into the current URL, maintaining all other parameters of URL and therefore redirecting to the same page
-            addAmazonTagURL();
-        } else {
-            // other websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
-            // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
-            const url = chrome.runtime.getURL('affiliates.json');
-            fetch(url)
-                .then((response) => response.json())
-                .then((json) => getAffiliateLink(json));
-        }
+        // Websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
+        // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
+        const url = chrome.runtime.getURL('affiliates.json');
+        fetch(url)
+            .then((response) => response.json())
+            .then((json) => getAffiliateLink(json));
     });
 }
 
@@ -223,24 +214,3 @@ function getAffiliateLink(affiliates) {
     var strippedUrl = stripURL(window.location.href);
     window.location.href = affiliates[strippedUrl];
 }
-
-/* 
- * Inserts Amazon-specific soulsmile affiliate tag to current URL
-*/
-function addAmazonTagURL() {
-    if (!window.location.href.includes('tag=soulsmilecl09-20')
-        && !window.location.href.includes('tag=soulsmileclubblm-20')
-        && !window.location.href.includes('tag=soulsmileclubcovid-20')
-        && !window.location.href.includes('tag=soulsmileclubswe-20')) {
-        // add soulsmilecl09-20 tag as a parameter to current URL
-        var url = new URL(window.location.href)
-        url.searchParams.append('tag', 'soulsmilecl09-20')
-
-        // redirect to new URL with tag
-        window.location.href = url
-    } else {
-        // do not insert if the user has already just clicked one of our affiliate links from the soulsmile website, just reload page to show notification
-        window.location.href = window.location.href;
-        console.log('Page reloaded');
-    }
-};

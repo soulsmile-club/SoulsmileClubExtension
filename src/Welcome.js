@@ -47,7 +47,7 @@ function Welcome() {
     });
 
     /*
-     * Strips full-length URL to just domain name, with no http, www, or parameters (e.g. just amazon.com)
+     * Strips full-length URL to just domain name, with no http, www, or parameters (e.g. just girlfriend.com)
      * @param urlString: string containing full URL of current website
      * @return: string of stripped URL
     */
@@ -80,12 +80,6 @@ function Welcome() {
      * @param url: current stripped URL (domain name) of page we are on
     */
     function checkAgainstAllPartners(affiliates, url) {
-        // check if we are on Amazon (because it is not be included in affiliates.json due to special case with tags)
-        if (url.includes("amazon.com")) {
-            setIsPartnerSite(true);
-            return;
-        }
-
         // otherwise, check if url contains any of the domain name keys in affiliates.json
         for (var key in affiliates) {
             if (url.includes(key)) {
@@ -118,42 +112,15 @@ function Welcome() {
                     // set isActivated to be true so browser Welcome page can update properly
                     setIsActivated(true);
 
-                    // redirects to affiliate link by inserting Amazon tag or getting URL from affiliates.json
-                    if (url.includes('amazon.com')) {
-                        addAmazonTagURL(url, id);
-                    } else {
-                        const affiliatesURL = chrome.runtime.getURL('affiliates.json');
-                        fetch(affiliatesURL)
-                            .then((response) => response.json())
-                            .then((json) => getAffiliateLink(url, id, json));
-                    }
+                    // gets URL from affiliates.json
+                    const affiliatesURL = chrome.runtime.getURL('affiliates.json');
+                    fetch(affiliatesURL)
+                        .then((response) => response.json())
+                        .then((json) => getAffiliateLink(url, id, json));
+                    
                 });
             }
         );
-    }
-
-    /* 
-     * Inserts Amazon-specific soulsmile affiliate tag to current URL
-     * @param url: string of current URL
-     * @param tabId: id number of tab we need to redirect with tag
-    */
-    function addAmazonTagURL(url, tabId) {
-        if (!url.includes('tag=soulsmilecl09-20') 
-            && !url.includes('tag=soulsmileclubblm-20')
-            && !url.includes('tag=soulsmileclubcovid-20')
-            && !url.includes('tag=soulsmileclubswe-20')) {
-            // add soulsmilecl09-20 tag as a parameter to current URL
-            var newURL = new URL(url)
-            newURL.searchParams.append('tag', 'soulsmilecl09-20')
-
-            // redirect correct tab to new URL with tag
-            chrome.tabs.update(tabId, {url: newURL.toString()});
-        } else {
-            // do not insert if the user has already just clicked one of our affiliate links from the soulsmile website, just reload page to show notification
-            chrome.tabs.reload(function (data) {
-                console.log("Page reload for adding amazon tag");
-            })
-        }
     }
 
     /* 
@@ -208,16 +175,14 @@ function Welcome() {
 
     var disclosure = (
         <div id="disclosure">
-            <b>Disclosure:</b> As an Amazon Associate and an affiliate of other brands, 
-            Soulsmile Club earns commission from qualifying purchases. However, instead of 
-            keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+            <b>Disclosure:</b>However, instead of keeping the commission, we donate 
+            all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
         </div>
     );
 
     var disclosureConsent = (
         <div id="disclosure">
-            <b>Disclosure:</b> As an Amazon Associate and an affiliate of other brands, 
-            Soulsmile Club earns commission from qualifying purchases. By clicking "Earn Soulsmiles" above, you are giving us your consent to automatically direct you to our affiliate links. However, instead of 
+            <b>Disclosure:</b>By clicking "Earn Soulsmiles" above, you are giving us your consent to automatically direct you to our affiliate links. However, instead of 
             keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
         </div>
     );
