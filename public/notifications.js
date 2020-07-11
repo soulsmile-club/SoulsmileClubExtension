@@ -7,9 +7,9 @@ $(document).ready(function() {
     // get lastURLInserted (timestamp of last time user was redirected to affiliate on this site),
     // refreshAffiliate (whether we need to put earning notification right now),
     // and noTimestamp (last time user clicked remind me later)
-    chrome.storage.sync.get(['lastURLInserted' + strippedUrl,
-        'refreshAffiliate',
-        'noTimestamp' + strippedUrl
+    chrome.storage.sync.get(["lastURLInserted" + strippedUrl,
+        "refreshAffiliate",
+        "noTimestamp" + strippedUrl
     ], function (data) {
 
         if (data.refreshAffiliate) {
@@ -77,8 +77,10 @@ function createPermissionNotification() {
     </div>`);
     Boundary.appendToBox("#permissionNotification",`
     <div id="disclosure">
-        <b>Disclosure:</b> By clicking "Yes" above, you are giving us your consent to automatically direct you to our affiliate links. However, instead of 
-        keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+        <b>Disclosure:</b> As an affiliate of this retailer, Soulsmile Club earns commission from qualifying purchases. 
+        By clicking "Yes" above, you are giving us your consent to automatically direct you to our affiliate links. 
+        However, instead of keeping the commission, we donate all of it to the causes listed on 
+        <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
     </div>
     `);
 
@@ -125,8 +127,10 @@ function createEarningReminder() {
     </div>`);
     Boundary.appendToBox("#earningsNotification",`
     <div id="earningsDisclosure">
-        <b>Disclosure:</b> In order to earn soulsmiles, you are now shopping through our affiliate link for this retailer. 
-        However, instead of keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+        <b>Disclosure:</b> In order to earn soulsmiles, you are currently shopping through our affiliate link for this retailer. 
+        As an affiliate of this retailer, Soulsmile Club earns commission from qualifying purchases. 
+        However, instead of keeping the commission, we donate all of it to the causes listed on 
+        <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
     </div>
     `);
 
@@ -145,7 +149,7 @@ function stripURL(urlString) {
     var url = new URL(urlString);
 
     // gets hostname from URL and strips it of www. (if it exists)
-    var strippedUrl = url.hostname.indexOf('www.') && url.hostname || url.hostname.replace('www.', '');
+    var strippedUrl = url.hostname.indexOf("www.") && url.hostname || url.hostname.replace("www.", "");
     
     // removes any prefixes to only include last 2 portions of hostname (e.g. buy.logitech.com --> logitech.com)
     var splitUrl = strippedUrl.split(".");
@@ -158,7 +162,7 @@ function stripURL(urlString) {
 function checkIfCheckoutPage() {
     // gets JSON file (public/checkout.json) containing mapping of domain name to URL keyword indicating it is a checkout page
     // *** IMPORTANT NOTE: to update with future partner sites, add new site to checkout.json with keyword that URL must contain when reaching the checkout page
-    const url = chrome.runtime.getURL('checkout.json');
+    const url = chrome.runtime.getURL("checkout.json");
     fetch(url)
         .then((response) => response.json())
         .then((json) => displayCheckoutNotif(json));
@@ -172,8 +176,18 @@ function displayCheckoutNotif(checkouts) {
     var urlString = window.location.href;
     var strippedUrl = stripURL(urlString);
     if (urlString.includes(checkouts[strippedUrl])) {
-        // TODO: only display earning reminder if it hasn't been shown in the past 5 (?) minutes
-        createEarningReminder();
+        var key = "checkoutTimestamp" + strippedUrl;
+        chrome.storage.sync.get([key], function (data) {
+            // number of minutes for which we should not repeat a checkout notification on a particular site
+            var checkoutMins = 10;
+            if (!data[key] || Date.now() - data[key] >= checkoutMins * 60 * 1000) {
+                // create earning reminder and reset checkoutTimestamp only if there has never been a checkout notification shown or if it was shown >= checkoutMins ago
+                chrome.storage.sync.set({[key]: Date.now()}, function () {
+                    console.log("New checkout timestamp for " + strippedUrl + " is " + Date.now());
+                    createEarningReminder();
+                });
+            }
+        });
     }
 }
 
@@ -199,7 +213,7 @@ function redirectToAffiliate() {
         console.log("New timestamp for " + strippedUrl + " is " + Date.now());
         // Websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
         // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
-        const url = chrome.runtime.getURL('affiliates.json');
+        const url = chrome.runtime.getURL("affiliates.json");
         fetch(url)
             .then((response) => response.json())
             .then((json) => getAffiliateLink(json));

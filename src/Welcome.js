@@ -175,15 +175,16 @@ function Welcome() {
 
     var disclosure = (
         <div id="disclosure">
-            <b>Disclosure:</b>However, instead of keeping the commission, we donate 
-            all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+            <b>Disclosure:</b> As an affiliate of this retailer, Soulsmile Club earns commission from qualifying purchases. 
+            However, instead of keeping the commission, we donate all of it to the causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
         </div>
     );
 
     var disclosureConsent = (
         <div id="disclosure">
-            <b>Disclosure:</b>By clicking "Earn Soulsmiles" above, you are giving us your consent to automatically direct you to our affiliate links. However, instead of 
-            keeping the commission, we donate all of it to causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
+            <b>Disclosure:</b> As an affiliate of this retailer, Soulsmile Club earns commission from qualifying purchases. 
+            By clicking "Earn Soulsmiles" above, you are giving us your consent to automatically direct you to our affiliate links. 
+            However, instead of keeping the commission, we donate all of it to the causes listed on <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">our website</a>.
         </div>
     );
     
@@ -193,7 +194,7 @@ function Welcome() {
         <>
         <div id='soul'>soul<span id='smile'>smile</span> club</div>
         {message}
-        {isActivated ? checkmark : activateButton}
+        {isPartnerSite && isActivated ? checkmark : activateButton}
         {isPartnerSite && isActivated ? disclosure : nothing}
         {isPartnerSite && !isActivated ? disclosureConsent : nothing}
         </>
