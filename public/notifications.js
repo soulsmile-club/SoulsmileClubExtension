@@ -39,6 +39,7 @@ $(document).ready(function() {
             // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
             console.log("already earning");
             checkIfCheckoutPage();
+            checkIfCartPage();
         }
     });
 });
@@ -168,6 +169,18 @@ function checkIfCheckoutPage() {
         .then((json) => displayCheckoutNotif(json));
 }
 
+/*
+ * Reads cart JSON file to check if current URL is a cart page (and then insert coupon code if so)
+*/
+function checkIfCartPage() {
+    // gets JSON file (public/coupon.json) containing mapping of domain name to URL keyword indicating it is a checkout page, id of coupon code element, and coupon code
+    // *** IMPORTANT NOTE: to update with future partner sites, add new site to coupon.json with keyword that URL must contain when reaching the cart page, id of coupon code element, and coupon code
+    const url = chrome.runtime.getURL("coupon.json");
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) => addCouponCode(json));
+}
+
 /* 
  * Helper function for checkIfCheckoutPage, takes JSON of domain names mapped to checkout URL keywords
  * and shows earning reminder notification if current URL is checkout page
@@ -188,6 +201,24 @@ function displayCheckoutNotif(checkouts) {
                 });
             }
         });
+    }
+}
+
+/* 
+ * Helper function for checkIfCartPage, takes JSON of domain names mapped to cart URL keywords, coupon code ids, coupon codes, and submit button names
+ * and inserts coupon code if current URL is cart page
+*/
+function addCouponCode(coupons) {
+    var urlString = window.location.href;
+    var strippedUrl = stripURL(urlString);
+    // coupons[strippedUrl] contains array of 4 elements: [cart URL keyword, coupon code field id, coupon code, coupon code submit button name]
+    if (urlString.includes(coupons[strippedUrl][0])) {
+        // we are on the cart page for this website
+        // add coupon code to coupon code field
+        var couponCodeField = document.getElementById(coupons[strippedUrl][1]);
+        couponCodeField.value = coupons[strippedUrl][2] + "\n";
+        var couponCodeSubmitButton = document.querySelector("button[type=submit][name="+coupons[strippedUrl][3]+"]");
+        couponCodeSubmitButton.click();
     }
 }
 

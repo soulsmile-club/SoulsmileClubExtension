@@ -53,6 +53,7 @@
     "fonts/*.woff2",
     "fonts/*.woff",
     "fonts/*.ttf",
-    "checkout.json"
+    "checkout.json",
+    "coupon.json"
   ]
 }
