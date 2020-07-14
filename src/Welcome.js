@@ -129,9 +129,27 @@ function Welcome() {
     */
     function getAffiliateLink(url, tabId, affiliates) {
         var strippedUrl = stripURL(url);
-        chrome.tabs.update(tabId, {url: affiliates[strippedUrl].toString()});
-    }
+        if (affiliates[strippedUrl].length < 2) {
+            console.log("ERROR: Need to specify at least two elements in affiliates.json (domain name and affiliate link)");
+        }
+        if (affiliates[strippedUrl][0]) {
+            // partner site allows us to redirect to affiliate product pages
+            if (affiliates[strippedUrl].length < 3) {
+                console.log("ERROR: Need to specify at least 3 elements in affiliates.json if first element is true -- next 2 elements should be query parameter name and query parameter value");
+            }
 
+            // insert query parameter to current URL
+            var url = new URL(url);
+            url.searchParams.append(affiliates[strippedUrl][1], affiliates[strippedUrl][2]);
+
+            // redirect to new URL
+            chrome.tabs.update(tabId, {url: url.toString()});
+        } else {
+            // must redirect to affiliate homepage
+            chrome.tabs.update(tabId, {url: affiliates[strippedUrl][1].toString()});
+        }
+    }
+    
     // "earn soulsmiles" button that should show up only if we are on an eligible site that is not currently activated
     var activateButton = (
         <div id='activateButton'>

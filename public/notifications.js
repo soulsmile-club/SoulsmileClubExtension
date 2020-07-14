@@ -212,7 +212,7 @@ function addCouponCode(coupons) {
     var urlString = window.location.href;
     var strippedUrl = stripURL(urlString);
     // coupons[strippedUrl] contains array of 4 elements: [cart URL keyword, coupon code field id, coupon code, coupon code submit button name]
-    if (urlString.includes(coupons[strippedUrl][0])) {
+    if (coupons[strippedUrl] && urlString.includes(coupons[strippedUrl][0])) {
         // we are on the cart page for this website
         // add coupon code to coupon code field
         var couponCodeField = document.getElementById(coupons[strippedUrl][1]);
@@ -256,6 +256,26 @@ function redirectToAffiliate() {
  * @param affiliates: JSON (read from public/affiliates.json) containing mapping of domain names to affiliate links
 */
 function getAffiliateLink(affiliates) {
+    console.log("get affiliate link");
     var strippedUrl = stripURL(window.location.href);
-    window.location.href = affiliates[strippedUrl];
+    console.log(affiliates[strippedUrl]);
+    if (affiliates[strippedUrl].length < 2) {
+        console.log("ERROR: Need to specify at least two elements in affiliates.json (domain name and affiliate link)");
+    }
+    if (affiliates[strippedUrl][0]) {
+        // partner site allows us to redirect to affiliate product pages
+        if (affiliates[strippedUrl].length < 3) {
+            console.log("ERROR: Need to specify at least 3 elements in affiliates.json if first element is true -- next 2 elements should be query parameter name and query parameter value");
+        }
+
+        // insert query parameter to current URL
+        var url = new URL(window.location.href);
+        url.searchParams.append(affiliates[strippedUrl][1], affiliates[strippedUrl][2]);
+
+        // redirect to new URL
+        window.location.href = url;
+    } else {
+        // must redirect to affiliate homepage
+        window.location.href = affiliates[strippedUrl][1];
+    }
 }

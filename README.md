@@ -24,9 +24,11 @@ This extension was built as a React app. Other APIs and technologies used includ
 
 1. Add link to `manifest.json` under `matches` under `content_scripts` so that notifications can be displayed when visiting the partner site.
 
-2. Add domain name to `public/affiliates.json` as the key, and add affiliate link as the value. [Note: this will redirect users to that affiliate link regardless of the page they were previously on. To keep a product page as we do for Amazon, insert custom logic in `notifications.js` and `Welcome.js`]
+2. Add information regarding the affiliate link in `public/affiliates.json`. The structure of the JSON file should have the domain name as the key, and add an array with 2 elements as the value: [a boolean indicating whether or not we can redirect to affiliate product pages, the affiliate link OR the query parameter name, (optional) the query parameter value]. If the partner site does not allow us to create an affiliate link on particular product pages, we will always redirect users to their homepage affiliate link, regardless of the page they were previously on. The JSON value with simply contains [false, affiliate link]. However, if the partner site does allow us to have affiliate links for different product pages, we will insert the query parameter into the user's current URL. In this case, the JSON value would look like [true, query parameter name, query parameter value].
 
 3. Add domain name to `public/checkout.json` as the key, along with a keyword that should appear in the URL when on a checkout page for that website (ex: if the user is taken to www.example.com/checkout/1234, "checkout" is likely the URL keyword to insert with example.com).
+
+4. If partner has given us a coupon code to be used, add details about the coupon code and the structure of the cart page in `public/coupon.json`. The structure of the JSON file should have the domain name as the key and an array with 4 elements as the value: [a keyword in the URL indicating the cart page, the id of the HTML input tag where the coupon code should be inserted, the coupon code itself (ex: SOULSMILE), the name attribute of the HTML submit button on the coupon code form].
 
 ## Authors
 
