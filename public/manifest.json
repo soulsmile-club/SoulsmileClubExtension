@@ -13,7 +13,7 @@
     "default_popup": "index.html"
   },
   "background": {
-    "scripts": ["background.js"],
+    "page": "background.html",
     "persistent": false
   },
   "content_scripts": [{
@@ -43,7 +43,7 @@
     "48": "soulsmile-48.png",
     "128": "soulsmile-128.png"
   },
-  "content_security_policy": "script-src 'self' 'sha256-ypW0wr1e+CGRr7YiTWwceJUjgoz6vEZ8WUfw8wlh4es='; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'sha256-ypW0wr1e+CGRr7YiTWwceJUjgoz6vEZ8WUfw8wlh4es=' https://apis.google.com https://www.gstatic.com/ https://*.firebaseio.com; object-src 'self'",
   "permissions": ["tabs", "storage"],
   "web_accessible_resources": [
     "boundary/boundary-extra.css",
