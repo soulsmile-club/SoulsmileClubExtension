@@ -12,18 +12,17 @@ import "firebase/firestore";
 import { Button } from '@material-ui/core';
 
 var firebaseConfig = {
-    apiKey: "AIzaSyBigQYTouOytX1qhlBmRBIa0g6fHF2_81w",
-    authDomain: "soulsmile-club.firebaseapp.com",
-    databaseURL: "https://soulsmile-club.firebaseio.com",
-    projectId: "soulsmile-club",
-    storageBucket: "soulsmile-club.appspot.com",
-    messagingSenderId: "310904582055",
-    appId: "1:310904582055:web:3d8ee1e910fa9c49221082"
+	    apiKey: process.env.REACT_APP_API_KEY,
+	    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+	    databaseURL: process.env.REACT_APP_DATABASE_URL,
+	    projectId: process.env.REACT_APP_PROJECT_ID,
+	    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+	    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+	    appId: process.env.REACT_APP_APP_ID
 };
-
+	
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
 console.log('Initialized firebase app');
 
 /*
@@ -32,12 +31,24 @@ console.log('Initialized firebase app');
 */
 function Account() {
 
-    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+		const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+		const [name, setName] = React.useState('');
+		const [email, setEmail] = React.useState('');
+		const [photoURL, setPhotoURL] = React.useState('');
 
     useEffect(() => {
-        if (firebase.auth().currentUser) {
-        	setIsLoggedIn(true);
-        }
+			firebase.auth().onAuthStateChanged(function(user) {
+				if (user) {
+					console.log(user);
+					setName(user.displayName);
+					setEmail(user.email);
+					setPhotoURL(user.photoURL + "?type=large");
+					setIsLoggedIn(true);
+				} else {
+					console.log('no user found');
+					setIsLoggedIn(false);
+				}
+			});
     });
 
 	function googleLoginPopup () {
@@ -64,14 +75,15 @@ function Account() {
 
 	function facebookLoginPopup() {
 		var provider = new firebase.auth.FacebookAuthProvider();
-
 		firebase.auth().signInWithPopup(provider).then(function(result) {
 		  // This gives you a Facebook Access Token. You can use it to access the Facebook API.
 		  var token = result.credential.accessToken;
 		  // The signed-in user info.
-		  var user = result.user;
+			var user = result.user;
+			console.log(user);
 		  setIsLoggedIn(true);
 		}).catch(function(error) {
+			console.log(error);
 		  // Handle Errors here.
 		  var errorCode = error.code;
 		  var errorMessage = error.message;
@@ -138,24 +150,30 @@ function Account() {
 	//   }
 	// });
 
-	function signOut () {
-		firebase.auth().signOut().then(function() {
-		  // Sign-out successful.
-		  setIsLoggedIn(false);
-		}).catch(function(error) {
-		  // An error happened.
-		});
-	}
+		function signOut () {
+			firebase.auth().signOut().then(function() {
+				// Sign-out successful.
+				setIsLoggedIn(false);
+			}).catch(function(error) {
+				// An error happened.
+			});
+		}
 
-	var logoutButton = (
-		<Button id='logoutButton' 
-                variant='contained' 
-                color='default' 
-                onClick={signOut}
-            >
-                Log Out
-            </Button>
-    );
+		var logoutButton = (
+			<>
+				<div className="profile">
+					<img id="photo" src={photoURL} alt={name}></img>
+					<h1>{name}</h1>
+				</div>
+				
+				<Button id='logoutButton' 
+						variant='contained' 
+						color='default' 
+						onClick={signOut}>
+						Log Out
+				</Button>
+			</>
+		);
 
     var loginButtons = (
     	<div>
