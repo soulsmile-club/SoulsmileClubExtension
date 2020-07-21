@@ -230,12 +230,13 @@ function Account() {
 				{photoURL ? <img id="photo" src={photoURL} alt={name}></img> : <></>}
 				<h1>{name}</h1>
 			</div>
-			
-			<Button id='logoutButton' 
-					variant='contained' 
-					color='default' 
-					onClick={signOut}>
-					Log Out
+
+			<Button 
+							variant='outlined' 
+							color='default'
+							onClick={signOut}
+							classes={{root: classes.root, label: classes.label, button: classes.button}}>
+				Log Out
 			</Button>
 		</>
 	);
