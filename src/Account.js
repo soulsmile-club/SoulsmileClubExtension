@@ -197,7 +197,7 @@ function Account() {
     return (
     	<>
 	        <div id="soul">Your Account</div>
-            {firebase.auth().currentUser ? logoutButton : loginButtons}
+            {isLoggedIn ? logoutButton : loginButtons}
 	    </>
     );
 }
