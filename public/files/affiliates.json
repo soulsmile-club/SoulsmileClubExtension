@@ -1,0 +1,108 @@
+{
+	"girlfriend.com": {
+		"extensionAllowed": true,
+		"productPageLinks": false,
+		"link": "https://girlfriend-store.myshopify.com/?rfsn=4298873.761fea"
+	},
+	"bestbuy.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false, 
+		"link": "https://bestbuy.7tiv.net/oYWxY"
+	},
+	"pillowguy.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false, 
+		"link": "https://pillowguy.rvgu.net/2ZPoD"
+	},
+	"logitech.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false, 
+		"link": "https://logitech.cfzu.net/yYDaD"
+	},
+	"earthhero.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": true, 
+		"queryParameterName": "ref", 
+		"queryParameterValue": "soulsmileclub"
+	},
+	"macys.com": {
+		"extensionAllowed": false, 
+		"keyword": "macys"
+	},
+	"champion.com": {
+		"extensionAllowed": false,
+		"keyword": "champion"
+	},
+    "bellacanvas.com": {
+		"extensionAllowed": false,
+		"keyword": "bellacanvas"
+	},
+    "maidenform.com": {
+		"extensionAllowed": false,
+		"keyword": "maidenform"
+	},
+    "splendid.com": {
+		"extensionAllowed": false,
+		"keyword": "splendid"
+	},
+    "outdoorvoices.com":  {
+		"extensionAllowed": false,
+		"keyword": "outdoorvoices"
+	},
+    "jamesperse.com": {
+		"extensionAllowed": false,
+		"keyword": "jamesperse"
+	},
+    "7forallmankind.com": {
+		"extensionAllowed": false,
+		"keyword": "7forallmankind"
+	},
+    "herbivorebotanicals.com": {
+		"extensionAllowed": false,
+		"keyword": "herbivorebotanicals"
+	},
+    "buxomcosmetics.com": {
+		"extensionAllowed": false,
+		"keyword": "buxomcosmetics"
+	},
+    "elfcosmetics.com": {
+		"extensionAllowed": false,
+		"keyword": "elfcosmetics"
+	},
+    "moltonbrown.com": {
+		"extensionAllowed": false,
+		"keyword": "moltonbrown"
+	},
+    "honest.com": {
+		"extensionAllowed": false,
+		"keyword": "honestcompany"
+	},
+    "skinceuticals.com": {
+		"extensionAllowed": false,
+		"keyword": "skinceuticals"
+	},
+    "kerastase-usa.com": {
+		"extensionAllowed": false,
+		"keyword": "kerastase"
+	},
+    "benefitcosmetics.com": {
+		"extensionAllowed": false,
+		"keyword": "benefitcosmetics"
+	},
+    "angelicbakehouse.com": {
+		"extensionAllowed": false,
+		"keyword": "angelicbakehouse"
+	},
+    "bakedbymelissa.com": {
+		"extensionAllowed": false,
+		"keyword": "bakedbymelissa"
+	},
+    "drinkhint.com": {
+		"extensionAllowed": false,
+		"keyword": "hint"
+	},
+    "earthshoes.com": {
+		"extensionAllowed": false,
+		"keyword": "earthshoes"
+	}
+}

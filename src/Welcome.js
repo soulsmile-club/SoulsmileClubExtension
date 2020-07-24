@@ -68,7 +68,7 @@ function Welcome() {
     */
     function checkIfPartnerSite(strippedUrl) {
         // gets affiliates JSON file to read and check if contains current domain name
-        const url = chrome.runtime.getURL('affiliates.json');
+        const url = chrome.runtime.getURL('files/affiliates.json');
         fetch(url)
             .then((response) => response.json())
             .then((json) => checkAgainstAllPartners(json, strippedUrl));
@@ -105,9 +105,8 @@ function Welcome() {
                 var id = tabs[0].id;
                 var strippedUrl = stripURL(tabs[0].url);
                 // var key = "lastURLInserted" + strippedUrl;
-
                 // gets URL from affiliates.json
-                const affiliatesURL = chrome.runtime.getURL('affiliates.json');
+                const affiliatesURL = chrome.runtime.getURL('files/affiliates.json');
                 fetch(affiliatesURL)
                     .then((response) => response.json())
                     .then((json) => getAffiliateLink(url, id, json));
@@ -121,20 +120,15 @@ function Welcome() {
     */
     function getAffiliateLink(url, tabId, affiliates) {
         var strippedUrl = stripURL(url);
-        if (affiliates[strippedUrl][0]) {
+        if (affiliates[strippedUrl]["extensionAllowed"]) {
             // extension can redirect to affiliate link
-            if (affiliates[strippedUrl].length < 3) {
-                console.log("ERROR: Need to specify at least three elements in affiliates.json (isExtensionAllowed, isQueryParameter, and affiliate link/query parameter)");
-            }
-            if (affiliates[strippedUrl][1]) {
+
+            if (affiliates[strippedUrl]["productPageLinks"]) {
                 // partner site allows us to redirect to affiliate product pages
-                if (affiliates[strippedUrl].length < 4) {
-                    console.log("ERROR: Need to specify at least 4 elements in affiliates.json if first element is true -- next 2 elements should be query parameter name and query parameter value");
-                }
 
                 // insert query parameter to current URL
                 var url = new URL(url);
-                url.searchParams.append(affiliates[strippedUrl][2], affiliates[strippedUrl][3]);
+                url.searchParams.append(affiliates[strippedUrl]["queryParameterName"], affiliates[strippedUrl]["queryParameterValue"]);
 
                 // set timestamp for redirection and refreshAffiliate
                 var key = "lastURLInserted" + strippedUrl;
@@ -150,12 +144,12 @@ function Welcome() {
                 var key = "lastURLInserted" + strippedUrl;
                 chrome.storage.sync.set({[key]: Date.now()}, function() {
                     setIsActivated(true);
-                    chrome.tabs.update(tabId, {url: affiliates[strippedUrl][2].toString()});
+                    chrome.tabs.update(tabId, {url: affiliates[strippedUrl]["link"].toString()});
                 });
             }
         } else {
             // must redirect to soulsmile website for permission
-            chrome.tabs.create({url: 'https://www.soulsmile.club/retailers/' + affiliates[strippedUrl][1]}, function () {
+            chrome.tabs.create({url: 'https://www.soulsmile.club/retailers/' + affiliates[strippedUrl]["keyword"]}, function () {
                 console.log("created retailer page");
             });
         }

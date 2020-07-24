@@ -68,11 +68,11 @@
     "boundary/boundary-extra.css",
     "bootstrap.min.css",
     "your-stylesheet-for-elements-within-boxes.css",
-    "affiliates.json",
+    "files/affiliates.json",
     "fonts/*.woff2",
     "fonts/*.woff",
     "fonts/*.ttf",
-    "checkout.json",
-    "coupon.json"
+    "files/checkout.json",
+    "files/coupon.json"
   ]
 }

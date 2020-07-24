@@ -62,7 +62,7 @@ function handleSoulsmileWebsite() {
  * creating box using Boundary API
 */
 function createPermissionNotification() {
-    const url = chrome.runtime.getURL("affiliates.json");
+    const url = chrome.runtime.getURL("files/affiliates.json");
     fetch(url)
         .then((response) => response.json())
         .then((json) => createPermissionNotificationOrSoulsmilePopup(json));
@@ -78,12 +78,12 @@ function createPermissionNotificationOrSoulsmilePopup(affiliates) {
     var strippedUrl = stripURL(window.location.href);
     console.log(affiliates[strippedUrl]);
 
-    if (affiliates[strippedUrl][0]) {
+    if (affiliates[strippedUrl]["extensionAllowed"]) {
         // affiliate link redirection is allowed by this retailer
         showPermissionNotification();
     } else {
         // redirection is not allowed, so direct to Soulsmile website, pass in retailer keyword for URL
-        showSoulsmilePopup(affiliates[strippedUrl][1]);
+        showSoulsmilePopup(affiliates[strippedUrl]["keyword"]);
     }
 }
 
@@ -255,7 +255,7 @@ function stripURL(urlString) {
 function checkIfCheckoutPage() {
     // gets JSON file (public/checkout.json) containing mapping of domain name to URL keyword indicating it is a checkout page
     // *** IMPORTANT NOTE: to update with future partner sites, add new site to checkout.json with keyword that URL must contain when reaching the checkout page
-    const url = chrome.runtime.getURL("checkout.json");
+    const url = chrome.runtime.getURL("files/checkout.json");
     fetch(url)
         .then((response) => response.json())
         .then((json) => displayCheckoutNotif(json));
@@ -267,7 +267,7 @@ function checkIfCheckoutPage() {
 function checkIfCartPage() {
     // gets JSON file (public/coupon.json) containing mapping of domain name to URL keyword indicating it is a checkout page, id of coupon code element, and coupon code
     // *** IMPORTANT NOTE: to update with future partner sites, add new site to coupon.json with keyword that URL must contain when reaching the cart page, id of coupon code element, and coupon code
-    const url = chrome.runtime.getURL("coupon.json");
+    const url = chrome.runtime.getURL("files/coupon.json");
     fetch(url)
         .then((response) => response.json())
         .then((json) => addCouponCode(json));
@@ -303,13 +303,13 @@ function displayCheckoutNotif(checkouts) {
 function addCouponCode(coupons) {
     var urlString = window.location.href;
     var strippedUrl = stripURL(urlString);
-    // coupons[strippedUrl] contains array of 4 elements: [cart URL keyword, coupon code field id, coupon code, coupon code submit button name]
-    if (coupons[strippedUrl] && urlString.includes(coupons[strippedUrl][0])) {
+    // coupons[strippedUrl] contains 4 elements: cart URL keyword, coupon code field id, coupon code, coupon code submit button name
+    if (coupons[strippedUrl] && urlString.includes(coupons[strippedUrl]["cartUrlKeyword"])) {
         // we are on the cart page for this website
         // add coupon code to coupon code field
-        var couponCodeField = document.getElementById(coupons[strippedUrl][1]);
-        couponCodeField.value = coupons[strippedUrl][2] + "\n";
-        var couponCodeSubmitButton = document.querySelector("button[type=submit][name="+coupons[strippedUrl][3]+"]");
+        var couponCodeField = document.getElementById(coupons[strippedUrl]["couponCodeElementId"]);
+        couponCodeField.value = coupons[strippedUrl]["couponCode"] + "\n";
+        var couponCodeSubmitButton = document.querySelector("button[type=submit][name="+coupons[strippedUrl]["submitButtonName"]+"]");
         couponCodeSubmitButton.click();
     }
 }
@@ -332,7 +332,7 @@ function setNoTimestamp() {
 function redirectToAffiliate() {
     // Websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
     // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
-    const url = chrome.runtime.getURL("affiliates.json");
+    const url = chrome.runtime.getURL("files/affiliates.json");
     fetch(url)
         .then((response) => response.json())
         .then((json) => getAffiliateLink(json));
@@ -346,20 +346,14 @@ function getAffiliateLink(affiliates) {
     console.log("get affiliate link");
     var strippedUrl = stripURL(window.location.href);
     console.log(affiliates[strippedUrl]);
-    if (affiliates[strippedUrl][0]) {
+    if (affiliates[strippedUrl]["extensionAllowed"]) {
         // extension can redirect to affiliate link
-        if (affiliates[strippedUrl].length < 3) {
-            console.log("ERROR: Need to specify at least three elements in affiliates.json (isExtensionAllowed, isQueryParameter, and affiliate link/query parameter)");
-        }
-        if (affiliates[strippedUrl][1]) {
+        if (affiliates[strippedUrl]["productPageLinks"]) {
             // partner site allows us to redirect to affiliate product pages
-            if (affiliates[strippedUrl].length < 4) {
-                console.log("ERROR: Need to specify at least 4 elements in affiliates.json if second element is true -- next 2 elements should be query parameter name and query parameter value");
-            }
 
             // insert query parameter to current URL
             var url = new URL(window.location.href);
-            url.searchParams.append(affiliates[strippedUrl][2], affiliates[strippedUrl][3]);
+            url.searchParams.append(affiliates[strippedUrl]["queryParameterName"], affiliates[strippedUrl]["queryParameterValue"]);
 
             // set timestamp for redirection and refreshAffiliate
             var key = "lastURLInserted" + strippedUrl;
@@ -374,11 +368,11 @@ function getAffiliateLink(affiliates) {
             var key = "lastURLInserted" + strippedUrl;
             chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
                 // redirect to new URL
-                window.location.href = affiliates[strippedUrl][2];
+                window.location.href = affiliates[strippedUrl]["link"];
             });
         }
     } else {
         // must show soulsmile popup for permission
-        showSoulsmilePopup(affiliates[strippedUrl][1]);
+        showSoulsmilePopup(affiliates[strippedUrl]["keyword"]);
     }
 }
