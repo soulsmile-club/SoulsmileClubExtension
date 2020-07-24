@@ -1,7 +1,9 @@
 {
-	"girlfriend.com": [false, "https://girlfriend-store.myshopify.com/?rfsn=4298873.761fea"],
-	"bestbuy.com": [false, "https://bestbuy.7tiv.net/oYWxY"],
-	"pillowguy.com": [false, "https://pillowguy.rvgu.net/2ZPoD"],
-	"logitech.com": [false, "https://logitech.cfzu.net/yYDaD"],
-	"earthhero.com": [true, "ref", "soulsmileclub"]
+	"girlfriend.com": [true, false, "https://girlfriend-store.myshopify.com/?rfsn=4298873.761fea"],
+	"bestbuy.com": [true, false, "https://bestbuy.7tiv.net/oYWxY"],
+	"pillowguy.com": [true, false, "https://pillowguy.rvgu.net/2ZPoD"],
+	"logitech.com": [true, false, "https://logitech.cfzu.net/yYDaD"],
+	"earthhero.com": [true, true, "ref", "soulsmileclub"],
+	"macys.com": [false, "macys"],
+	"champion.com": [false, "champion"]
 }

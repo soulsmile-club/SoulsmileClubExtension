@@ -22,7 +22,10 @@
       "https://*.pillowguy.com/*",
       "https://*.logitech.com/*",
       "https://*.girlfriend.com/*",
-      "https://*.earthhero.com/*"
+      "https://*.earthhero.com/*",
+      "https://*.macys.com/*",
+      "https://*.champion.com/*",
+      "https://www.soulsmile.club/retailers/*"
     ],
     "css": [
       "boundary/boundary.css",

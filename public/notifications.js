@@ -4,14 +4,19 @@ $(document).ready(function() {
     var strippedUrl = stripURL(window.location.href);
     console.log("current URL: " + strippedUrl);
 
+    if (strippedUrl === "soulsmile.club") {
+        handleSoulsmileWebsite();
+        return;
+    }
+
     // get lastURLInserted (timestamp of last time user was redirected to affiliate on this site),
     // refreshAffiliate (whether we need to put earning notification right now),
     // and noTimestamp (last time user clicked remind me later)
     chrome.storage.sync.get(["lastURLInserted" + strippedUrl,
         "refreshAffiliate",
+        "refreshAffiliateThroughSoulsmile",
         "noTimestamp" + strippedUrl
     ], function (data) {
-
         if (data.refreshAffiliate) {
             // User just clicked got redirected through affiliate link -- show earning reminder
             chrome.storage.sync.set({refreshAffiliate: false}, function() {
@@ -32,9 +37,7 @@ $(document).ready(function() {
             }
         } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
             // User is earning soulsmiles on this site but needs to be refreshed
-            chrome.storage.sync.set({refreshAffiliate: true}, function() {
-                redirectToAffiliate();
-            });
+            redirectToAffiliate();
         } else {
             // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
             console.log("already earning");
@@ -44,17 +47,56 @@ $(document).ready(function() {
     });
 });
 
+function handleSoulsmileWebsite() {
+    $("#activateButton").click(function () {
+        var key = "lastURLInserted" + $("#strippedUrl").html();
+        console.log(key);
+        chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
+            
+        });
+    });
+}
+
 /* 
  * Creates notification asking user for permission to start earning soulsmiles on this site by
  * creating box using Boundary API
 */
 function createPermissionNotification() {
+    const url = chrome.runtime.getURL("affiliates.json");
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) => createPermissionNotificationOrSoulsmilePopup(json));
+}
+
+
+/* 
+ * Helper function for createPermissionNotification
+ * Creates notification asking user for permission to start earning soulsmiles on this site by
+ * creating box using Boundary API, redirects either to affiliate link or 
+*/
+function createPermissionNotificationOrSoulsmilePopup(affiliates) {
+    var strippedUrl = stripURL(window.location.href);
+    console.log(affiliates[strippedUrl]);
+
+    if (affiliates[strippedUrl][0]) {
+        // affiliate link redirection is allowed by this retailer
+        showPermissionNotification();
+    } else {
+        // redirection is not allowed, so direct to Soulsmile website, pass in retailer keyword for URL
+        showSoulsmilePopup(affiliates[strippedUrl][1]);
+    }
+}
+
+/*
+ * Shows notification asking for permission to redirect user to affiliate link
+*/
+function showPermissionNotification() {
     // create notification box
     var permissionNotification = Boundary.createBox("permissionNotification");
 
     // add CSS
     Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('bootstrap.min.css'));
-	Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    Boundary.loadBoxCSS("#permissionNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
     
     // add content
     Boundary.rewriteBox("#permissionNotification", `
@@ -90,11 +132,61 @@ function createPermissionNotification() {
         $('#permissionNotification').remove();
         setNoTimestamp();
     })
-	Boundary.findElemInBox("#yesButton", "#permissionNotification").click(function() {
+    Boundary.findElemInBox("#yesButton", "#permissionNotification").click(function() {
         $('#permissionNotification').remove();
-        chrome.storage.sync.set({refreshAffiliate: true}, function() {
-            redirectToAffiliate();
-        });
+        redirectToAffiliate();
+    });
+}
+
+/*
+ * Shows notification asking to redirect user to Soulsmile website, where they can then activate donations
+ * @param retailer: string for keyword to insert in soulsmile.club/retailers URL
+*/
+function showSoulsmilePopup(retailer) {
+    console.log("show soulsmile popup");
+
+    // create notification box
+    var permissionNotification = Boundary.createBox("soulsmilePopup");
+
+    // add CSS
+    Boundary.loadBoxCSS("#soulsmilePopup", chrome.extension.getURL('bootstrap.min.css'));
+    Boundary.loadBoxCSS("#soulsmilePopup", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    
+    // add content
+    Boundary.rewriteBox("#soulsmilePopup", `
+    <div class="modal-header">
+        <button type="button" id="noButton" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">Remind me later</span>
+        </button>
+    </div>
+    `);
+    Boundary.appendToBox("#soulsmilePopup", `<div>
+        <h2 id='soulsmile-title'>soul<span id="smile">smile</span> club</h2>
+    </div>
+    `);
+    Boundary.appendToBox("#soulsmilePopup", `
+    <div>
+        <p id='earn-soulsmiles'>Would you like to earn soulsmiles for your purchases?</p>
+    </div>`);
+    Boundary.appendToBox("#soulsmilePopup", `
+    <div>
+        <button type='button' class='btn btn-secondary' id='yesButton'>Yes, please!</button>
+    </div>`);
+    Boundary.appendToBox("#soulsmilePopup",`
+    <div id="disclosure">
+        <b>Note:</b> This retailer does not allow us to automatically direct you to our affiliate link, so you must click 
+        "Start Earning Soulsmiles" from the Soulsmile Club website after clicking "Yes" above in order for your soulsmiles to be earned.
+    </div>
+    `);
+
+    // add button functionalities
+    Boundary.findElemInBox("#noButton", '#soulsmilePopup').click(function() {
+        $('#soulsmilePopup').remove();
+        setNoTimestamp();
+    })
+    Boundary.findElemInBox("#yesButton", "#soulsmilePopup").click(function() {
+        $('#soulsmilePopup').remove();
+        window.open('https://www.soulsmile.club/retailers/' + retailer);
     });
 }
 
@@ -238,17 +330,12 @@ function setNoTimestamp() {
  * to keep track of how long it's been since the last affiliate link redirection for this site
 */
 function redirectToAffiliate() {
-    var strippedUrl = stripURL(window.location.href);
-    var key = "lastURLInserted" + strippedUrl;
-    chrome.storage.sync.set({[key]: Date.now()}, function() {
-        console.log("New timestamp for " + strippedUrl + " is " + Date.now());
-        // Websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
-        // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
-        const url = chrome.runtime.getURL("affiliates.json");
-        fetch(url)
-            .then((response) => response.json())
-            .then((json) => getAffiliateLink(json));
-    });
+    // Websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
+    // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
+    const url = chrome.runtime.getURL("affiliates.json");
+    fetch(url)
+        .then((response) => response.json())
+        .then((json) => getAffiliateLink(json));
 }
 
 /* 
@@ -259,23 +346,39 @@ function getAffiliateLink(affiliates) {
     console.log("get affiliate link");
     var strippedUrl = stripURL(window.location.href);
     console.log(affiliates[strippedUrl]);
-    if (affiliates[strippedUrl].length < 2) {
-        console.log("ERROR: Need to specify at least two elements in affiliates.json (domain name and affiliate link)");
-    }
     if (affiliates[strippedUrl][0]) {
-        // partner site allows us to redirect to affiliate product pages
+        // extension can redirect to affiliate link
         if (affiliates[strippedUrl].length < 3) {
-            console.log("ERROR: Need to specify at least 3 elements in affiliates.json if first element is true -- next 2 elements should be query parameter name and query parameter value");
+            console.log("ERROR: Need to specify at least three elements in affiliates.json (isExtensionAllowed, isQueryParameter, and affiliate link/query parameter)");
         }
+        if (affiliates[strippedUrl][1]) {
+            // partner site allows us to redirect to affiliate product pages
+            if (affiliates[strippedUrl].length < 4) {
+                console.log("ERROR: Need to specify at least 4 elements in affiliates.json if second element is true -- next 2 elements should be query parameter name and query parameter value");
+            }
 
-        // insert query parameter to current URL
-        var url = new URL(window.location.href);
-        url.searchParams.append(affiliates[strippedUrl][1], affiliates[strippedUrl][2]);
+            // insert query parameter to current URL
+            var url = new URL(window.location.href);
+            url.searchParams.append(affiliates[strippedUrl][2], affiliates[strippedUrl][3]);
 
-        // redirect to new URL
-        window.location.href = url;
+            // set timestamp for redirection and refreshAffiliate
+            var key = "lastURLInserted" + strippedUrl;
+            chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
+                // redirect to new URL
+                window.location.href = url;
+            });
+        } else {
+            // must redirect to affiliate homepage
+            
+            // set timestamp for redirection and refreshAffiliate
+            var key = "lastURLInserted" + strippedUrl;
+            chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
+                // redirect to new URL
+                window.location.href = affiliates[strippedUrl][2];
+            });
+        }
     } else {
-        // must redirect to affiliate homepage
-        window.location.href = affiliates[strippedUrl][1];
+        // must show soulsmile popup for permission
+        showSoulsmilePopup(affiliates[strippedUrl][1]);
     }
 }
