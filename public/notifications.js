@@ -37,7 +37,7 @@ $(document).ready(function() {
             }
         } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
             // User is earning soulsmiles on this site but needs to be refreshed
-            redirectToAffiliate();
+            showPermissionNotification();
         } else {
             // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
             console.log("already earning");
