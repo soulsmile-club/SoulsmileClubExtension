@@ -172,3 +172,26 @@ hr {
     box-shadow: inset 0px 0px 0px 30px #7ac142;
   }
 }
+
+#error{
+  color: red;
+  padding: 5px 10px;
+  margin: 5px 0px;
+}
+
+#container {
+  overflow: auto;
+  height: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+#outlined-secondary {
+  padding: 9.25px 7px;
+}
+
+#outlined-secondary-label {
+  top: -3px;
+}

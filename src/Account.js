@@ -60,6 +60,7 @@ function Account() {
 	const [password, setPassword] = React.useState('');
 	const [photoURL, setPhotoURL] = React.useState('');
 	const [isLogin, setIsLogin] = React.useState(true);
+	const[errorMessage, setErrorMessage] = React.useState('');
 
 	useEffect(() => {
 		firebase.auth().onAuthStateChanged(function(user) {
@@ -86,8 +87,11 @@ function Account() {
 		})
 		.catch(function(error) {
 			// Handle Errors here.
+			// if (errorCode == 'auth/account-exists-with-different-credential')
 			var errorCode = error.code;
 			var errorMessage = error.message;
+			console.log("Login error " + errorCode + " " + errorMessage);
+			setErrorMessage("Error: " + errorMessage + " Please try again.");
 			// ...
 		});
 	}
@@ -108,6 +112,10 @@ function Account() {
 			// Handle Errors here.
 			var errorCode = error.code;
 			var errorMessage = error.message;
+			var errorCode = error.code;
+			var errorMessage = error.message;
+			console.log("Login error " + errorCode + " " + errorMessage);
+			setErrorMessage("Error: " + errorMessage + " Please try again.");
 			// ...
 		});
 	}
@@ -130,6 +138,10 @@ function Account() {
 		  // The firebase.auth.AuthCredential type that was used.
 		  var credential = error.credential;
 		  // ...
+		  var errorCode = error.code;
+		  var errorMessage = error.message;
+		  console.log("Login error " + errorCode + " " + errorMessage);
+		  setErrorMessage("Error: " + errorMessage + " Please try again.");
 		});
 	}
 
@@ -151,6 +163,10 @@ function Account() {
 		  var email = error.email;
 		  // The firebase.auth.AuthCredential type that was used.
 		  var credential = error.credential;
+		  var errorCode = error.code;
+			var errorMessage = error.message;
+			console.log("Login error " + errorCode + " " + errorMessage);
+			setErrorMessage("Error: " + errorMessage + " Please try again.");
 		});
 	}
 
@@ -242,7 +258,7 @@ function Account() {
 	);
 
 	var signupButtons = (
-		<div>
+		<div id="container">
 			<Button id='googleLoginButton' 
 							variant='outlined' 
 							color='default'
@@ -294,12 +310,13 @@ function Account() {
 				Sign up with Email
 			</Button>
 			</form>
-			<p>Have an account already? Log in <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</p>
+			<div id="error" hidden={!errorMessage}>{errorMessage}</div>
+			<div>Have an account already? Log in <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</div>
 		</div>
 	);
 
 	var loginButtons = (
-		<div>
+		<div id = "container">
 			<Button id='googleLoginButton' 
 							variant='outlined' 
 							color='default'
@@ -342,7 +359,8 @@ function Account() {
 				Login with Email
 			</Button>
 			</form>
-			<p>Don't have an account yet? Sign up <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</p>
+			<div id="error" hidden={!errorMessage}>{errorMessage}</div>
+			<div>Don't have an account yet? Sign up <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</div>
 		</div>
 	);
 
