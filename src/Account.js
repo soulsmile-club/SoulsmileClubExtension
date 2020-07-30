@@ -15,34 +15,34 @@ import "firebase/firestore";
 
 const useStyles = makeStyles({
   root: {
-		backgroundColor: 'white',
-		padding: '5px 5px',
-		margin: '5px 0px',
-		width: '75%',
-		color: '#eda1aa'
-	},
-	focused: {
-		color: '#eda1aa'
-	},
-  label: {
-		fontFamily: 'Montserrat !important',
-  },
-  button: {
+    backgroundColor: 'white',
+    padding: '5px 5px',
+    margin: '5px 0px',
+    width: '75%',
+    color: '#eda1aa'
+},
+focused: {
+    color: '#eda1aa'
+},
+label: {
+    fontFamily: 'Montserrat !important',
+},
+button: {
     fontFamily: 'Montserrat !important',
     fontSize: '14px !important',
-  }
+}
 });
 
 var firebaseConfig = {
-	    apiKey: process.env.REACT_APP_API_KEY,
-	    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-	    databaseURL: process.env.REACT_APP_DATABASE_URL,
-	    projectId: process.env.REACT_APP_PROJECT_ID,
-	    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-	    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-	    appId: process.env.REACT_APP_APP_ID
+        apiKey: process.env.REACT_APP_API_KEY,
+        authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+        databaseURL: process.env.REACT_APP_DATABASE_URL,
+        projectId: process.env.REACT_APP_PROJECT_ID,
+        storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+        messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+        appId: process.env.REACT_APP_APP_ID
 };
-	
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 console.log('Initialized firebase app');
@@ -50,326 +50,444 @@ console.log('Initialized firebase app');
 /*
  * Account page to register/login and show Soulsmile account, wallet, giving history, and ability to allocate soulsmiles
  * TODO: Add login and account functionality
-*/
-function Account() {
-	const classes = useStyles();
-	const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-	const [name, setName] = React.useState('');
-	const [username, setUsername] = React.useState('');
-	const [email, setEmail] = React.useState('');
-	const [password, setPassword] = React.useState('');
-	const [photoURL, setPhotoURL] = React.useState('');
-	const [isLogin, setIsLogin] = React.useState(true);
-	const[errorMessage, setErrorMessage] = React.useState('');
+ */
+ function Account() {
+    const classes = useStyles();
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+    const [name, setName] = React.useState('');
+    const [username, setUsername] = React.useState('');
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [photoURL, setPhotoURL] = React.useState('');
+    const [isLogin, setIsLogin] = React.useState(true);
+    const [isConfirmAccount, setIsConfirmAccount] = React.useState('');
+    const [errorMessage, setErrorMessage] = React.useState('');
+    const [existingEmail, setExistingEmail] = React.useState('');
+    const [pendingCred, setPendingCred] = React.useState({});
 
-	useEffect(() => {
-		firebase.auth().onAuthStateChanged(function(user) {
-			if (user) {
-				setName(user.displayName);
-				setUsername(user.email);
-				if (user.photoURL) {
-					setPhotoURL(user.photoURL + "?type=large");
-				} else {
-					setPhotoURL(null);
-				}
-				setIsLoggedIn(true);
-			} else {
-				console.log('no user found');
-				setIsLoggedIn(false);
-			}
-		});
-	});
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged(function(user) {
+            console.log("auth state changed");
+            if (user) {
+                setName(user.displayName);
+                setUsername(user.email);
+                if (user.photoURL) {
+                    setPhotoURL(user.photoURL + "?type=large");
+                } else {
+                    setPhotoURL(null);
+                }
+                setIsLoggedIn(true);
+            } else {
+                console.log('no user found');
+                setIsLoggedIn(false);
+            }
+        });
+    });
 
-	function emailLoginPopup () {
-		firebase.auth().signInWithEmailAndPassword(email, password)
-		.then(function (user) {
-			setIsLoggedIn(true);
-		})
-		.catch(function(error) {
-			// Handle Errors here.
-			// if (errorCode == 'auth/account-exists-with-different-credential')
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			console.log("Login error " + errorCode + " " + errorMessage);
-			setErrorMessage("Error: " + errorMessage + " Please try again.");
-			// ...
-		});
-	}
+    function handleUserLoggedIn (user) {
+        setIsLoggedIn(true);
+    }
 
-	async function emailSignupPopup () {
-		await firebase.auth().createUserWithEmailAndPassword(email, password).then(async function(result) {
-			var user = firebase.auth().currentUser;
-			await user.updateProfile({
-				displayName: name
-			}).then(function () {
-				// Hacky way to set the name - TODO: user reload
-				setName(user.displayName);
-				console.log('Email signup with popup');
-			})
-		})
-		.catch(function(error) {
-			console.log(error);
-			// Handle Errors here.
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			var errorCode = error.code;
-			var errorMessage = error.message;
-			console.log("Login error " + errorCode + " " + errorMessage);
-			setErrorMessage("Error: " + errorMessage + " Please try again.");
-			// ...
-		});
-	}
+    function confirmPassword() {
+        firebase.auth().signInWithEmailAndPassword(existingEmail, password).then(function (result) {
+            handleUserLoggedIn(result.user);
+            result.user.linkWithCredential(pendingCred);
+            console.log("linked");
+            setIsConfirmAccount('');
+        })
+        .catch(function (error) {
+            setErrorMessage(error.message);
+        });
+    }
 
-	function googleLoginPopup () {
-		var provider = new firebase.auth.GoogleAuthProvider();
+    function continueWithGoogle() {
+        var googProvider = new firebase.auth.GoogleAuthProvider();
+        googProvider.setCustomParameters({'login_hint': existingEmail});
+        firebase.auth().signInWithPopup(googProvider).then(function(result) {
+            handleUserLoggedIn(result.user);
+            result.user.linkWithCredential(pendingCred);
+            console.log("linked");
+            setIsConfirmAccount('');
+        })
+        .catch(function (error) {
+            setErrorMessage(error.message);
+        });
+    }
 
-		firebase.auth().signInWithPopup(provider).then(function(result) {
-		  // This gives you a Google Access Token. You can use it to access the Google API.
-		  var token = result.credential.accessToken;
-		  // The signed-in user info.
-		  var user = result.user;
-		  setIsLoggedIn(true);
-		}).catch(function(error) {
-		  // Handle Errors here.
-		  var errorCode = error.code;
-		  var errorMessage = error.message;
-		  // The email of the user's account used.
-		  var email = error.email;
-		  // The firebase.auth.AuthCredential type that was used.
-		  var credential = error.credential;
-		  // ...
-		  var errorCode = error.code;
-		  var errorMessage = error.message;
-		  console.log("Login error " + errorCode + " " + errorMessage);
-		  setErrorMessage("Error: " + errorMessage + " Please try again.");
-		});
-	}
+    function continueWithFacebook() {
+        var fbProvider = new firebase.auth.FacebookAuthProvider();
+        fbProvider.setCustomParameters({'login_hint': existingEmail});
+        firebase.auth().signInWithPopup(fbProvider).then(function(result) {
+            handleUserLoggedIn(result.user);
+            result.user.linkWithCredential(pendingCred);
+            console.log("linked");
+            setIsConfirmAccount('');
+        })
+        .catch(function (error) {
+            setErrorMessage(error.message);
+        });
+    }
+
+    function handleLoginSignupErrors(error) {
+        console.log(error);
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // Account exists with different credential. To recover both accounts
+        // have to be linked but the user must prove ownership of the original
+        // account.
+        if (errorCode == 'auth/account-exists-with-different-credential') {
+            var existingEmail = error.email;
+            var pendingCred = error.credential;
+            // Lookup existing account’s provider ID.
+            firebase.auth().fetchSignInMethodsForEmail(existingEmail)
+            .then(function(methods) {
+                if (methods[0] === 'password') {
+                    // Password account already exists with the same email.
+                    // Ask user to provide password associated with that account.
+                    setIsConfirmAccount('password');
+                    setExistingEmail(existingEmail);
+                    setPendingCred(pendingCred);
+                } else if (methods[0] == firebase.auth.GoogleAuthProvider.PROVIDER_ID) {
+                    // Sign in user to Google with same account.
+                    setIsConfirmAccount('google');
+                    setExistingEmail(existingEmail);
+                    setPendingCred(pendingCred);
+                } else if (methods[0] == firebase.auth.FacebookAuthProvider.PROVIDER_ID) {
+                    // Sign in user to Facebook with same account.
+                    setIsConfirmAccount('facebook');
+                    setExistingEmail(existingEmail);
+                    setPendingCred(pendingCred);
+                }
+            });
+        } else {
+            console.log("Login error " + errorCode + " " + errorMessage);
+            setErrorMessage("Error: " + errorMessage + " Please try again.");
+        }
+    }
+
+    function emailLoginPopup () {
+        firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(function (user) {
+            handleUserLoggedIn(user);
+        })
+        .catch(handleLoginSignupErrors);
+    }
+
+    async function emailSignupPopup () {
+        await firebase.auth().createUserWithEmailAndPassword(email, password).then(async function(result) {
+            var user = firebase.auth().currentUser;
+            await user.updateProfile({
+                displayName: name
+            }).then(function () {
+                // Hacky way to set the name - TODO: user reload
+                setName(user.displayName);
+                console.log('Email signup with popup');
+            })
+        })
+        .catch(handleLoginSignupErrors);
+    }
+
+    function googleLoginPopup () {
+        var provider = new firebase.auth.GoogleAuthProvider();
+
+        firebase.auth().signInWithPopup(provider).then(function(result) {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          var token = result.credential.accessToken;
+          // The signed-in user info.
+          var user = result.user;
+          setIsLoggedIn(true);
+      }).catch(handleLoginSignupErrors);
+  }
 
 
-	function facebookLoginPopup() {
-		var provider = new firebase.auth.FacebookAuthProvider();
-		firebase.auth().signInWithPopup(provider).then(function(result) {
-		  // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-		  var token = result.credential.accessToken;
-		  // The signed-in user info.
-			var user = result.user;
-		  setIsLoggedIn(true);
-		}).catch(function(error) {
-			console.log(error);
-		  // Handle Errors here.
-		  var errorCode = error.code;
-		  var errorMessage = error.message;
-		  // The email of the user's account used.
-		  var email = error.email;
-		  // The firebase.auth.AuthCredential type that was used.
-		  var credential = error.credential;
-		  var errorCode = error.code;
-			var errorMessage = error.message;
-			console.log("Login error " + errorCode + " " + errorMessage);
-			setErrorMessage("Error: " + errorMessage + " Please try again.");
-		});
-	}
+  function facebookLoginPopup() {
+    var provider = new firebase.auth.FacebookAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+          var token = result.credential.accessToken;
+          // The signed-in user info.
+          var user = result.user;
+          setIsLoggedIn(true);
+      }).catch(handleLoginSignupErrors);
+  }
 
-	// NOTE: Add code below when implementing login with email
-	// // Step 1.
-	// // User tries to sign in to Google.
-	// auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(error) {
-	//   // An error happened.
-	//   if (error.code === 'auth/account-exists-with-different-credential') {
-	//     // Step 2.
-	//     // User's email already exists.
-	//     // The pending Google credential.
-	//     var pendingCred = error.credential;
-	//     // The provider account's email address.
-	//     var email = error.email;
-	//     // Get sign-in methods for this email.
-	//     auth.fetchSignInMethodsForEmail(email).then(function(methods) {
-	//       // Step 3.
-	//       // If the user has several sign-in methods,
-	//       // the first method in the list will be the "recommended" method to use.
-	//       if (methods[0] === 'password') {
-	//         // Asks the user their password.
-	//         // In real scenario, you should handle this asynchronously.
-	//         var password = promptUserForPassword(); // TODO: implement promptUserForPassword.
-	//         auth.signInWithEmailAndPassword(email, password).then(function(user) {
-	//           // Step 4a.
-	//           return user.linkWithCredential(pendingCred);
-	//         }).then(function() {
-	//           // Google account successfully linked to the existing Firebase user.
-	//           goToApp();
-	//         });
-	//         return;
-	//       }
-	//       // All the other cases are external providers.
-	//       // Construct provider object for that provider.
-	//       // TODO: implement getProviderForProviderId.
-	//       var provider = getProviderForProviderId(methods[0]);
-	//       // At this point, you should let the user know that they already has an account
-	//       // but with a different provider, and let them validate the fact they want to
-	//       // sign in with this provider.
-	//       // Sign in to provider. Note: browsers usually block popup triggered asynchronously,
-	//       // so in real scenario you should ask the user to click on a "continue" button
-	//       // that will trigger the signInWithPopup.
-	//       auth.signInWithPopup(provider).then(function(result) {
-	//         // Remember that the user may have signed in with an account that has a different email
-	//         // address than the first one. This can happen as Firebase doesn't control the provider's
-	//         // sign in flow and the user is free to login using whichever account they own.
-	//         // Step 4b.
-	//         // Link to Google credential.
-	//         // As we have access to the pending credential, we can directly call the link method.
-	//         result.user.linkAndRetrieveDataWithCredential(pendingCred).then(function(usercred) {
-	//           // Google account successfully linked to the existing Firebase user.
-	//           goToApp();
-	//         });
-	//       });
-	//     });
-	//   }
-	// });
+    // NOTE: Add code below when implementing login with email
+    // // Step 1.
+    // // User tries to sign in to Google.
+    // auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(error) {
+    //   // An error happened.
+    //   if (error.code === 'auth/account-exists-with-different-credential') {
+    //     // Step 2.
+    //     // User's email already exists.
+    //     // The pending Google credential.
+    //     var pendingCred = error.credential;
+    //     // The provider account's email address.
+    //     var email = error.email;
+    //     // Get sign-in methods for this email.
+    //     auth.fetchSignInMethodsForEmail(email).then(function(methods) {
+    //       // Step 3.
+    //       // If the user has several sign-in methods,
+    //       // the first method in the list will be the "recommended" method to use.
+    //       if (methods[0] === 'password') {
+    //         // Asks the user their password.
+    //         // In real scenario, you should handle this asynchronously.
+    //         var password = promptUserForPassword(); // TODO: implement promptUserForPassword.
+    //         auth.signInWithEmailAndPassword(email, password).then(function(user) {
+    //           // Step 4a.
+    //           return user.linkWithCredential(pendingCred);
+    //         }).then(function() {
+    //           // Google account successfully linked to the existing Firebase user.
+    //           goToApp();
+    //         });
+    //         return;
+    //       }
+    //       // All the other cases are external providers.
+    //       // Construct provider object for that provider.
+    //       // TODO: implement getProviderForProviderId.
+    //       var provider = getProviderForProviderId(methods[0]);
+    //       // At this point, you should let the user know that they already has an account
+    //       // but with a different provider, and let them validate the fact they want to
+    //       // sign in with this provider.
+    //       // Sign in to provider. Note: browsers usually block popup triggered asynchronously,
+    //       // so in real scenario you should ask the user to click on a "continue" button
+    //       // that will trigger the signInWithPopup.
+    //       auth.signInWithPopup(provider).then(function(result) {
+    //         // Remember that the user may have signed in with an account that has a different email
+    //         // address than the first one. This can happen as Firebase doesn't control the provider's
+    //         // sign in flow and the user is free to login using whichever account they own.
+    //         // Step 4b.
+    //         // Link to Google credential.
+    //         // As we have access to the pending credential, we can directly call the link method.
+    //         result.user.linkAndRetrieveDataWithCredential(pendingCred).then(function(usercred) {
+    //           // Google account successfully linked to the existing Firebase user.
+    //           goToApp();
+    //         });
+    //       });
+    //     });
+    //   }
+    // });
 
-	function loginOrSignup (e) {
-		e.preventDefault();
-		setIsLogin(!isLogin);
-	}
+    function loginOrSignup (e) {
+        e.preventDefault();
+        setIsLogin(!isLogin);
+    }
 
-	function signOut () {
-		firebase.auth().signOut().then(function() {
-			// Sign-out successful.
-			setIsLoggedIn(false);
-		}).catch(function(error) {
-			// An error happened.
-		});
-	}
+    function signOut () {
+        firebase.auth().signOut().then(function() {
+            // Sign-out successful.
+            setIsLoggedIn(false);
+        }).catch(function(error) {
+            // An error happened.
+        });
+    }
 
-	var logoutButton = (
-		<>
-			<div className="profile">
-				{photoURL ? <img id="photo" src={photoURL} alt={name}></img> : <></>}
-				<h1>{name}</h1>
-			</div>
+    function deleteAccount () {
+        firebase.auth().currentUser.delete().then(function() {
+          // User deleted.
+          console.log("user deleted");
+          setIsLoggedIn(false);
+        }).catch(function(error) {
+          // An error happened.
+          console.log(error);
+        });
+    }
 
-			<Button 
-							variant='outlined' 
-							color='default'
-							onClick={signOut}
-							classes={{root: classes.root, label: classes.label, button: classes.button}}>
-				Log Out
-			</Button>
-		</>
-	);
+    var logoutButton = (
+        <>
+        <div className="profile">
+        {photoURL ? <img id="photo" src={photoURL} alt={name}></img> : <></>}
+        <h1>{name}</h1>
+        </div>
 
-	var signupButtons = (
-		<div id="container">
-			<Button id='googleLoginButton' 
-							variant='outlined' 
-							color='default'
-							onClick={googleLoginPopup}
-							classes={{root: classes.root, label: classes.label, button: classes.button}}>
-				Sign up with Google
-			</Button>
-			<Button id='facebookLoginButton' 
-							variant='outlined' 
-							color='default'
-							onClick={facebookLoginPopup}
-							classes={{root: classes.root, label: classes.label, button: classes.button}}>
-				Sign up with Facebook
-			</Button>
-			<hr/>
-			<form autoComplete="off">
-				<TextField 
-					id="outlined-secondary"
-					label="Name"
-					type="text"
-					value={name} 
-					onChange={e => setName(e.target.value)}
-					classes={{root: classes.root, label: classes.label, focused: classes.focused}}
-					variant="outlined" 
-					/>
-				<TextField 
-					id="outlined-secondary"
-					label="Email"
-					type="text"
-					value={email} 
-					onChange={e => setEmail(e.target.value)}
-					classes={{root: classes.root, label: classes.label, focused: classes.focused}}
-					variant="outlined" 
-					/>
-				<TextField 
-					id="outlined-secondary"
-					label="Password"
-					type="password"
-					value={password} 
-					classes={{root: classes.root, label: classes.label, focused: classes.focused}}
-					onChange={e => setPassword(e.target.value)}
-					variant="outlined" 
-					/>
-				<Button 
-							variant='outlined' 
-							color='default'
-							onClick={emailSignupPopup}
-							classes={{root: classes.root, label: classes.label, button: classes.button}}>
-				Sign up with Email
-			</Button>
-			</form>
-			<div id="error" hidden={!errorMessage}>{errorMessage}</div>
-			<div>Have an account already? Log in <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</div>
-		</div>
-	);
+        <Button 
+        variant='outlined' 
+        color='default'
+        onClick={signOut}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Log Out
+        </Button>
 
-	var loginButtons = (
-		<div id = "container">
-			<Button id='googleLoginButton' 
-							variant='outlined' 
-							color='default'
-							onClick={googleLoginPopup}
-							classes={{root: classes.root, label: classes.label, button: classes.button}}>
-				Login with Google
-			</Button>
-			<Button id='facebookLoginButton' 
-							variant='outlined' 
-							color='default'
-							onClick={facebookLoginPopup}
-							classes={{root: classes.root, label: classes.label, button: classes.button}}>
-				Login with Facebook
-			</Button>
-			<hr/>
-			<form autoComplete="off">
-				<TextField 
-					id="outlined-secondary"
-					label="Email"
-					type="text"
-					value={email} 
-					onChange={e => setEmail(e.target.value)}
-					classes={{root: classes.root, label: classes.label, focused: classes.focused}}
-					variant="outlined" 
-					/>
-				<TextField 
-					id="outlined-secondary"
-					label="Password"
-					type="password"
-					value={password} 
-					classes={{root: classes.root, label: classes.label, focused: classes.focused}}
-					onChange={e => setPassword(e.target.value)}
-					variant="outlined" 
-					/>
-				<Button 
-							variant='outlined' 
-							color='default'
-							onClick={emailLoginPopup}
-							classes={{root: classes.root, label: classes.label, button: classes.button}}>
-				Login with Email
-			</Button>
-			</form>
-			<div id="error" hidden={!errorMessage}>{errorMessage}</div>
-			<div>Don't have an account yet? Sign up <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</div>
-		</div>
-	);
+        <Button 
+        variant='outlined' 
+        color='default'
+        onClick={deleteAccount}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Delete Account
+        </Button>
+        </>
+    );
 
-	return (
-		<>
-		<div id="soul">Your Account</div>
-		{isLoggedIn ? logoutButton : (isLogin ? loginButtons : signupButtons) }
-		</>
-	);
+    var confirmPassword = (
+        <>
+        <div id="message">You already have an existing Soulsmile Club account associated with this email address. Please enter the password below to complete login.</div>
+
+        <TextField 
+        id="outlined-secondary"
+        label="Password"
+        type="password"
+        value={password} 
+        classes={{root: classes.root, label: classes.label, focused: classes.focused}}
+        onChange={e => setPassword(e.target.value)}
+        variant="outlined" 
+        />
+
+        <Button 
+        variant='outlined' 
+        color='default'
+        onClick={confirmPassword}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Login
+        </Button>
+        <div id="error" hidden={!errorMessage}>{errorMessage}</div>
+        </>
+    );
+
+    var continueGoogle = (
+        <>
+        <div id="message">You already have a Soulsmile Club account associated with this email address, created with Google authentication. Please login through Google to continue.</div>
+
+        <Button 
+        variant='outlined' 
+        color='default'
+        onClick={continueWithGoogle}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Continue with Google
+        </Button>
+        <div id="error" hidden={!errorMessage}>{errorMessage}</div>
+        </>
+    );
+
+    var continueFacebook = (
+        <>
+        <div id="message">You already have a Soulsmile Club account associated with this email address, created with Facebook authentication. Please login through Facebook to continue.</div>
+
+        <Button 
+        variant='outlined' 
+        color='default'
+        onClick={continueWithFacebook}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Continue with Facebook
+        </Button>
+        <div id="error" hidden={!errorMessage}>{errorMessage}</div>
+        </>
+    );
+
+    var signupButtons = (
+        <div id="container">
+        <Button id='googleLoginButton' 
+        variant='outlined' 
+        color='default'
+        onClick={googleLoginPopup}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Sign up with Google
+        </Button>
+        <Button id='facebookLoginButton' 
+        variant='outlined' 
+        color='default'
+        onClick={facebookLoginPopup}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Sign up with Facebook
+        </Button>
+        <hr/>
+        <form autoComplete="off">
+        <TextField 
+        id="outlined-secondary"
+        label="Name"
+        type="text"
+        value={name} 
+        onChange={e => setName(e.target.value)}
+        classes={{root: classes.root, label: classes.label, focused: classes.focused}}
+        variant="outlined" 
+        />
+        <TextField 
+        id="outlined-secondary"
+        label="Email"
+        type="text"
+        value={email} 
+        onChange={e => setEmail(e.target.value)}
+        classes={{root: classes.root, label: classes.label, focused: classes.focused}}
+        variant="outlined" 
+        />
+        <TextField 
+        id="outlined-secondary"
+        label="Password"
+        type="password"
+        value={password} 
+        classes={{root: classes.root, label: classes.label, focused: classes.focused}}
+        onChange={e => setPassword(e.target.value)}
+        variant="outlined" 
+        />
+        <Button 
+        variant='outlined' 
+        color='default'
+        onClick={emailSignupPopup}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Sign up with Email
+        </Button>
+        </form>
+        <div id="error" hidden={!errorMessage}>{errorMessage}</div>
+        <div>Have an account already? Log in <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</div>
+        </div>
+        );
+
+    var loginButtons = (
+        <div id = "container">
+        <Button id='googleLoginButton' 
+        variant='outlined' 
+        color='default'
+        onClick={googleLoginPopup}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Login with Google
+        </Button>
+        <Button id='facebookLoginButton' 
+        variant='outlined' 
+        color='default'
+        onClick={facebookLoginPopup}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Login with Facebook
+        </Button>
+        <hr/>
+        <form autoComplete="off">
+        <TextField 
+        id="outlined-secondary"
+        label="Email"
+        type="text"
+        value={email} 
+        onChange={e => setEmail(e.target.value)}
+        classes={{root: classes.root, label: classes.label, focused: classes.focused}}
+        variant="outlined" 
+        />
+        <TextField 
+        id="outlined-secondary"
+        label="Password"
+        type="password"
+        value={password} 
+        classes={{root: classes.root, label: classes.label, focused: classes.focused}}
+        onChange={e => setPassword(e.target.value)}
+        variant="outlined" 
+        />
+        <Button 
+        variant='outlined' 
+        color='default'
+        onClick={emailLoginPopup}
+        classes={{root: classes.root, label: classes.label, button: classes.button}}>
+        Login with Email
+        </Button>
+        </form>
+        <div id="error" hidden={!errorMessage}>{errorMessage}</div>
+        <div>Don't have an account yet? Sign up <a id="loginOrSignup" onClick={loginOrSignup}>here</a>.</div>
+        </div>
+        );
+
+    return (
+        <>
+        <div id="soul">Your Account</div>
+        {isLoggedIn ? logoutButton : ((isConfirmAccount == 'password') ? confirmPassword :
+                                      (isConfirmAccount == 'google') ? continueGoogle :
+                                      (isConfirmAccount == 'facebook') ? continueFacebook :
+                                      (isLogin ? loginButtons : signupButtons)) }
+        </>
+        );
 }
 
 export default Account;
