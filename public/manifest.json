@@ -18,6 +18,7 @@
   },
   "content_scripts": [{
     "matches": [
+      "https://*.getrocketbook.com/*",
       "https://*.bestbuy.com/*",
       "https://*.pillowguy.com/*",
       "https://*.logitech.com/*",
