@@ -1,4 +1,16 @@
 {
+	"perriconemd.com": {
+		"extensionAllowed": false,
+		"keyword": "perriconemd"
+	},
+	"bn3th.com": {
+		"extensionAllowed": false,
+		"keyword": "bn3th"
+	},
+	"smartbuyglasses.com": {
+		"extensionAllowed": false,
+		"keyword": "smartbuyglasses"
+	},
 	"getrocketbook.com": {
 		"extensionAllowed": true,
 		"productPageLinks": false,
