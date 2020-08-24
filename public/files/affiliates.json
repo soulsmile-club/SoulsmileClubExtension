@@ -1,4 +1,36 @@
 {
+	"cora.life": {
+		"extensionAllowed": false,
+		"keyword": "cora"
+	},
+	"siobeauty.com": {
+		"extensionAllowed": false,
+		"keyword": "siobeauty"
+	},
+	"fresh.com": {
+		"extensionAllowed": false,
+		"keyword": "fresh"
+	},
+	"wetnwildbeauty.com": {
+		"extensionAllowed": false,
+		"keyword": "wetnwild"
+	},
+	"nordstrom.com": {
+		"extensionAllowed": false,
+		"keyword": "nordstrom"
+	},
+	"alibris.com": {
+		"extensionAllowed": false,
+		"keyword": "alibris"
+	},
+	"laroche-posay.us": {
+		"extensionAllowed": false,
+		"keyword": "larocheposay"
+	},
+	"nanoairmask.com": {
+		"extensionAllowed": false,
+		"keyword": "nanoairmask"
+	},
 	"perriconemd.com": {
 		"extensionAllowed": false,
 		"keyword": "perriconemd"
@@ -11,6 +43,11 @@
 		"extensionAllowed": false,
 		"keyword": "smartbuyglasses"
 	},
+	"briogeo.com": {
+		"extensionAllowed": true,
+		"productPageLinks": false,
+		"link": "https://www.briogeohair.com/?rfsn=4592625.1fd2228"
+	},
 	"getrocketbook.com": {
 		"extensionAllowed": true,
 		"productPageLinks": false,
@@ -20,6 +57,26 @@
 		"extensionAllowed": true,
 		"productPageLinks": false,
 		"link": "https://girlfriend-store.myshopify.com/?rfsn=4298873.761fea"
+	},
+	"novica.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false, 
+		"link": "https://go.novica.com/vBKWd"
+	},
+	"astrogaming.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false, 
+		"link": "https://imp.i140643.net/GeyQk"
+	},
+	"bluemic.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false, 
+		"link": "https://imp.i127288.net/10Ygd"
+	},
+	"ultimateears.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false, 
+		"link": "https://ultimate-ears.dubn.net/Xbara"
 	},
 	"bestbuy.com": {
 		"extensionAllowed": true, 
