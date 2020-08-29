@@ -6,54 +6,53 @@ $(document).ready(function() {
 
     if (strippedUrl === "soulsmile.club") {
         handleSoulsmileWebsite();
-        return;
-    }
+    } else {
+        console.log("after return");
 
-    // get lastURLInserted (timestamp of last time user was redirected to affiliate on this site),
-    // refreshAffiliate (whether we need to put earning notification right now),
-    // and noTimestamp (last time user clicked remind me later)
-    chrome.storage.sync.get(["lastURLInserted" + strippedUrl,
-        "refreshAffiliate",
-        "refreshAffiliateThroughSoulsmile",
-        "noTimestamp" + strippedUrl
-    ], function (data) {
-        if (data.refreshAffiliate) {
-            // User just clicked got redirected through affiliate link -- show earning reminder
-            chrome.storage.sync.set({refreshAffiliate: false}, function() {
-                createEarningReminder();
-            });
-        }
-
-        if (!data["lastURLInserted" + strippedUrl]) {
-            // User has never started earning soulsmiles on this site before
-            if (!data["noTimestamp" + strippedUrl]) {
-                // User has never clicked remind me later
-                createPermissionNotification();
-            } else if (Date.now() - data["noTimestamp" + strippedUrl] >= 86400000) {
-                // User has clicked remind me later and they need to be asked again
-                createPermissionNotification();
-            } else {
-                // User has clicked remind me later but it hasn't been 24 hours yet -- do nothing
+        // get lastURLInserted (timestamp of last time user was redirected to affiliate on this site),
+        // refreshAffiliate (whether we need to put earning notification right now),
+        // and noTimestamp (last time user clicked remind me later)
+        chrome.storage.sync.get(["lastURLInserted" + strippedUrl,
+            "refreshAffiliate",
+            "refreshAffiliateThroughSoulsmile",
+            "noTimestamp" + strippedUrl
+        ], function (data) {
+            console.log(JSON.stringify(data));
+            if (data.refreshAffiliate) {
+                // User just clicked got redirected through affiliate link -- show earning reminder
+                chrome.storage.sync.set({refreshAffiliate: false}, function() {
+                    createEarningReminder();
+                });
             }
-        } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
-            // User is earning soulsmiles on this site but needs to be refreshed
-            showPermissionNotification();
-        } else {
-            // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
-            console.log("already earning");
-            checkIfCheckoutPage();
-            checkIfCartPage();
-        }
-    });
+
+            if (!data["lastURLInserted" + strippedUrl]) {
+                // User has never started earning soulsmiles on this site before
+                if (!data["noTimestamp" + strippedUrl]) {
+                    // User has never clicked remind me later
+                    createPermissionNotification();
+                } else if (Date.now() - data["noTimestamp" + strippedUrl] >= 86400000) {
+                    // User has clicked remind me later and they need to be asked again
+                    createPermissionNotification();
+                } else {
+                    // User has clicked remind me later but it hasn't been 24 hours yet -- do nothing
+                }
+            } else if (Date.now() - data["lastURLInserted" + strippedUrl] >= 86400000) {
+                // User is earning soulsmiles on this site but needs to be refreshed
+                showPermissionNotification();
+            } else {
+                // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
+                console.log("already earning");
+                checkIfCheckoutPage();
+                checkIfCartPage();
+            }
+        });
+    }
 });
 
 function handleSoulsmileWebsite() {
+    console.log("soulsmile website");
     $("#activateButton").click(function () {
-        var key = "lastURLInserted" + $("#strippedUrl").html();
-        console.log(key);
-        chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
-            
-        });
+        redirectToAffiliate($("#strippedUrl").html());
     });
 }
 
@@ -134,7 +133,7 @@ function showPermissionNotification() {
     })
     Boundary.findElemInBox("#yesButton", "#permissionNotification").click(function() {
         $('#permissionNotification').remove();
-        redirectToAffiliate();
+        redirectToAffiliate(stripURL(window.location.href));
     });
 }
 
@@ -329,50 +328,43 @@ function setNoTimestamp() {
  * Redirects current page to the affiliate link of the website, also storing timestamp in lastURLInserted
  * to keep track of how long it's been since the last affiliate link redirection for this site
 */
-function redirectToAffiliate() {
+function redirectToAffiliate(strippedUrl) {
     // Websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
     // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
     const url = chrome.runtime.getURL("files/affiliates.json");
     fetch(url)
         .then((response) => response.json())
-        .then((json) => getAffiliateLink(json));
+        .then((json) => getAffiliateLink(json, strippedUrl));
 }
 
 /* 
  * Reads affiliates JSON and redirects to the affiliate link of the website we are currently on
  * @param affiliates: JSON (read from public/affiliates.json) containing mapping of domain names to affiliate links
 */
-function getAffiliateLink(affiliates) {
+function getAffiliateLink(affiliates, strippedUrl) {
     console.log("get affiliate link");
-    var strippedUrl = stripURL(window.location.href);
     console.log(affiliates[strippedUrl]);
-    if (affiliates[strippedUrl]["extensionAllowed"]) {
-        // extension can redirect to affiliate link
-        if (affiliates[strippedUrl]["productPageLinks"]) {
-            // partner site allows us to redirect to affiliate product pages
+    if (affiliates[strippedUrl]["productPageLinks"]) {
+        // partner site allows us to redirect to affiliate product pages
 
-            // insert query parameter to current URL
-            var url = new URL(window.location.href);
-            url.searchParams.append(affiliates[strippedUrl]["queryParameterName"], affiliates[strippedUrl]["queryParameterValue"]);
+        // insert query parameter to current URL
+        var url = new URL(window.location.href);
+        url.searchParams.append(affiliates[strippedUrl]["queryParameterName"], affiliates[strippedUrl]["queryParameterValue"]);
 
-            // set timestamp for redirection and refreshAffiliate
-            var key = "lastURLInserted" + strippedUrl;
-            chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
-                // redirect to new URL
-                window.location.href = url;
-            });
-        } else {
-            // must redirect to affiliate homepage
-            
-            // set timestamp for redirection and refreshAffiliate
-            var key = "lastURLInserted" + strippedUrl;
-            chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
-                // redirect to new URL
-                window.location.href = affiliates[strippedUrl]["link"];
-            });
-        }
+        // set timestamp for redirection and refreshAffiliate
+        var key = "lastURLInserted" + strippedUrl;
+        chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
+            // redirect to new URL
+            window.location.href = url;
+        });
     } else {
-        // must show soulsmile popup for permission
-        showSoulsmilePopup(affiliates[strippedUrl]["keyword"]);
+        // must redirect to affiliate homepage
+        
+        // set timestamp for redirection and refreshAffiliate
+        var key = "lastURLInserted" + strippedUrl;
+        chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
+            // redirect to new URL
+            window.location.href = affiliates[strippedUrl]["link"];
+        });
     }
 }

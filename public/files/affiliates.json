@@ -27,82 +27,122 @@
 	},
 	"macys.com": {
 		"extensionAllowed": false, 
-		"keyword": "macys"
+		"keyword": "macys",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=777210.100453945&type=3&subid=0"
 	},
 	"champion.com": {
 		"extensionAllowed": false,
-		"keyword": "champion"
+		"keyword": "champion",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=510326.10000015&type=3&subid=0"
 	},
     "bellacanvas.com": {
 		"extensionAllowed": false,
-		"keyword": "bellacanvas"
+		"keyword": "bellacanvas",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=756738.19&type=3&subid=0"
 	},
     "maidenform.com": {
 		"extensionAllowed": false,
-		"keyword": "maidenform"
+		"keyword": "maidenform",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=664600.10&type=3&subid=0"
 	},
     "splendid.com": {
 		"extensionAllowed": false,
-		"keyword": "splendid"
+		"keyword": "splendid",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=513777.140&type=3&subid=0&LSNSUBSITE=LSNSUBSITE"
 	},
     "outdoorvoices.com":  {
 		"extensionAllowed": false,
-		"keyword": "outdoorvoices"
+		"keyword": "outdoorvoices",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=796668.88&type=3&subid=0"
 	},
     "jamesperse.com": {
 		"extensionAllowed": false,
-		"keyword": "jamesperse"
+		"keyword": "jamesperse",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=668935.474&type=3&subid=0"
 	},
     "7forallmankind.com": {
 		"extensionAllowed": false,
-		"keyword": "7forallmankind"
+		"keyword": "7forallmankind",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=658839.10000719&type=3&subid=0"
 	},
     "herbivorebotanicals.com": {
 		"extensionAllowed": false,
-		"keyword": "herbivorebotanicals"
+		"keyword": "herbivorebotanicals",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=607200.6&subid=0&type=4"
 	},
     "buxomcosmetics.com": {
 		"extensionAllowed": false,
-		"keyword": "buxomcosmetics"
+		"keyword": "buxomcosmetics",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=561992.44&type=3&subid=0"
 	},
     "elfcosmetics.com": {
 		"extensionAllowed": false,
-		"keyword": "elfcosmetics"
+		"keyword": "elfcosmetics",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=382587.779&type=3&subid=0" 
 	},
     "moltonbrown.com": {
 		"extensionAllowed": false,
-		"keyword": "moltonbrown"
+		"keyword": "moltonbrown",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=388455.519&type=3&subid=0"
 	},
     "honest.com": {
 		"extensionAllowed": false,
-		"keyword": "honestcompany"
+		"keyword": "honestcompany",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=599875.535&type=3&subid=0"
 	},
     "skinceuticals.com": {
 		"extensionAllowed": false,
-		"keyword": "skinceuticals"
+		"keyword": "skinceuticals",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=645501.2&type=3&subid=0"
 	},
     "kerastase-usa.com": {
 		"extensionAllowed": false,
-		"keyword": "kerastase"
+		"keyword": "kerastase",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=662055.296&type=3&subid=0"
 	},
     "benefitcosmetics.com": {
 		"extensionAllowed": false,
-		"keyword": "benefitcosmetics"
+		"keyword": "benefitcosmetics",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=250778.10001033&type=3&subid=0"
 	},
     "angelicbakehouse.com": {
 		"extensionAllowed": false,
-		"keyword": "angelicbakehouse"
+		"keyword": "angelicbakehouse",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=754077.6&type=3&subid=0"
 	},
     "bakedbymelissa.com": {
 		"extensionAllowed": false,
-		"keyword": "bakedbymelissa"
+		"keyword": "bakedbymelissa",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=760083.8&type=3&subid=0"
 	},
     "drinkhint.com": {
 		"extensionAllowed": false,
-		"keyword": "hint"
+		"keyword": "hint",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=650829.78&type=3&subid=0"
 	},
     "earthshoes.com": {
 		"extensionAllowed": false,
-		"keyword": "earthshoes"
+		"keyword": "earthshoes",
+		"productPageLinks": false, 
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=769017.12&type=3&subid=0"
 	}
 }
