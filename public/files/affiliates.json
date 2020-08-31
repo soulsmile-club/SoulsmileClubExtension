@@ -1,10 +1,119 @@
 {
+	"fanatics.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false,
+		"link": "https://fanatics.ncw6.net/P3Om6"
+	},
+	"art.com": {
+		"extensionAllowed": false, 
+		"keyword": "art",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=771189.44&subid=0&type=4"
+	},
+	"petco.com": {
+		"extensionAllowed": true, 
+		"productPageLinks": false,
+		"link": "https://petco.9zpg.net/JEzNq"
+	},
+	"wolventhreads.com": {
+		"extensionAllowed": true,
+		"productPageLinks": false,
+		"link": "https://wolven.7ufqwl.net/6O0OK"
+	},
+	"wine.com": {
+		"extensionAllowed": false, 
+		"keyword": "wine",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=209195.10003778&type=3&subid=0"
+	},
+	"smarternutrition.com": {
+		"extensionAllowed": false, 
+		"keyword": "smarternutrition",
+		"productPageLinks": false,
+		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=731752&type=3&subid=0"
+	},
+	"onehanesplace.com": {
+		"extensionAllowed": false, 
+		"keyword": "onehanesplace",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=510316.10000167&subid=0&type=4"
+	},
+	"monicaandandy.com": {
+		"extensionAllowed": false, 
+		"keyword": "monicaandandy",
+		"productPageLinks": false,
+		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=811904&type=3&subid=0"
+	},
+	"matethelabel.com": {
+		"extensionAllowed": false, 
+		"keyword": "matethelabel",
+		"productPageLinks": false,
+		"link": "https://matethelabel.com/?aff=49"
+	},
+	"livelarq.com": {
+		"extensionAllowed": true,
+		"productPageLinks": false,
+		"link": "https://imp.i263265.net/Xbgbo"
+	},
+	"justmysize.com": {
+		"extensionAllowed": false, 
+		"keyword": "justmysize",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=510312.10000186&subid=0&type=4"
+	},
+	"hellobello.com": {
+		"extensionAllowed": false, 
+		"keyword": "hellobello",
+		"productPageLinks": false,
+		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=802284&type=3&subid=0"
+	},
+	"hanes.com": {
+		"extensionAllowed": false, 
+		"keyword": "hanes",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=510309.10000259&subid=0&type=4"
+	},
+	"giftcards.com": {
+		"extensionAllowed": false, 
+		"keyword": "giftcards",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=686295.11&subid=0&type=4"
+	},
+	"gaiam.com": {
+		"extensionAllowed": false, 
+		"keyword": "gaiam",
+		"productPageLinks": false,
+		"link": "https://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=671990.10008639&type=3&subid=0"
+	},
+	"dressbarn.com": {
+		"extensionAllowed": false, 
+		"keyword": "dressbarn",
+		"productPageLinks": false,
+		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=762943&type=3&subid=0"
+	},
+	"diamondcandles.com": {
+		"extensionAllowed": false, 
+		"keyword": "diamondcandles",
+		"productPageLinks": false,
+		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=744108&type=3&subid=0"
+	},
+	"apoterra.com": {
+		"extensionAllowed": false, 
+		"keyword": "apoterra",
+		"productPageLinks": false,
+		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=669952&type=3&subid=0"
+	},
+	"anker.com": {
+		"extensionAllowed": false, 
+		"keyword": "anker",
+		"productPageLinks": false,
+		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=724082&type=3&subid=0"
+	},
 	"cora.life": {
 		"extensionAllowed": false,
 		"keyword": "cora",
 		"productPageLinks": false, 
 		"link": "http://click.linksynergy.com/fs-bin/click?id=f/0sq70QSLU&offerid=697312&type=3&subid=0"
-
 	},
 	"siobeauty.com": {
 		"extensionAllowed": false,
