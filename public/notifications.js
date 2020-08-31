@@ -59,7 +59,7 @@ function handleSoulsmileWebsite() {
 /* 
  * Creates notification asking user for permission to start earning soulsmiles on this site by
  * creating box using Boundary API
-*/
+*/ 
 function createPermissionNotification() {
     const url = chrome.runtime.getURL("files/affiliates.json");
     fetch(url)
