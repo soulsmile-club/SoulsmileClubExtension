@@ -51,8 +51,17 @@ $(document).ready(function() {
 
 function handleSoulsmileWebsite() {
     console.log("soulsmile website");
-    $("#activateButton").click(function () {
-        redirectToAffiliate($("#strippedUrl").html());
+    var checkExist = setInterval(function() {
+        if ($("#activateButton").length) {
+            console.log("exists");
+            clearInterval(checkExist);
+            $("#activateButton").click(function () {
+                console.log("clicked");
+                redirectToAffiliate($("#strippedUrl").html());
+            });
+        } else {
+            console.log("does not exist");
+        }
     });
 }
 
