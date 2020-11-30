@@ -10,5 +10,4 @@ chrome.runtime.onInstalled.addListener(function(details) {
 	} else if (details.reason == "update") {
 		// can add update notification for user when we make major changes (e.g. adding account/giving history)
 	}
-    
 });
