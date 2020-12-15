@@ -26,19 +26,20 @@ This extension was built as a React app. Other APIs and technologies used includ
 
 1. Add link to `manifest.json` under `matches` under `content_scripts` so that notifications can be displayed when visiting the partner site.
 
-2. Add information regarding the affiliate link in `public/files/affiliates.json`. The JSON file should always have the shortened domain name as the key, and the value should be another JSON object that always contains the boolean `extensionAllowed`.
-
-     * If `extensionAllowed` is true, the JSON should also contain `productPageLinks`, which is true if the affiliate allows us to create custom affiliate links for particular product pages (by inserting a query parameter in the URL).
+2. Add all relevant information regarding the affiliate link [here](https://airtable.com/tblccUg3BaGsod9ci/viwBgOlpm6hbTYkEe?blocks=hide). Information includes:
+     * Name of retailer
+     * Affiliate link (deep linking)
+     * Description of retailer
+     * Soulsmile Featured (based on Good on You, Cruelty-Free Kitty, Leaping Bunny, Green America, The Good Trade, and other brand ratings).
+     * Category (must belong to the following categories: General, Clothing & Apparel, Health & Beauty, Electronics, Home, Food & Drink, Shoes & Accessories, Books, Fitness, Baby Products, Gifts)
+     * Extension allowed (false if we have not yet gotten explicit approval from the partner site to use their affiliate links in our browser extension. Therefore, we will instead redirect to the Soulsmile website, where users can click the affiliate link themselves. This is why we note down a `keyword` in the airtable, so that we can use to redirect to the page on our Soulsmile website that contains the affiliate link for that partner at www.soulsmile.club/retailers/keyword.)
+     * Keyword (even if extension allowed, include for all retailers for consistency).
+     * Domain in the format of: retailer_name.suffix_of_site (com, org, net, etc.)
+     * Affiliate Network (must belong to the following categories: Rakuten, Impact, Tapfiliate, Refersion)
+     * Deep Linking (Refersion and tapfiliate allows; Rakuten and Impact, must check out for each retailer). Inquire hello@soulsmile.club to create deep links.
+     * Checkout (keyword to that should appear in the URL when on a checkout page for that website (ex: if the user is taken to www.example.com/checkout/1234, "checkout" is likely the URL keyword to insert with example.com).
      
-          * If `productPageLinks` is true, the JSON will contain `queryParameterName` and `queryParameterValue`, which are the name and value of the query parameter that must be inserted on any product page in order to track Soulsmile as the referrer.
-     
-          * If `productPageLinks` is false and the partner site does not allow us to create an affiliate link on particular product pages, we will always redirect users to their homepage affiliate link, regardless of the page they were previously on. In this case, the JSON object will contain a string called `link`, which is the homepage affiliate link that we will always redirect to, given user consent.
-
-     * Finally, if `extensionAllowed` is false, we have not yet gotten explicit approval from the partner site to use their affiliate links in our browser extension. Therefore, we will instead redirect to the Soulsmile website, where users can click the affiliate link themselves. The JSON value will contain a `keyword` that we can use to redirect to the page on our Soulsmile website that contains the affiliate link for that partner (at www.soulsmile.club/retailers/keyword).
-
-3. Add domain name to `public/files/checkout.json` as the key, along with a keyword that should appear in the URL when on a checkout page for that website (ex: if the user is taken to www.example.com/checkout/1234, "checkout" is likely the URL keyword to insert with example.com).
-
-4. If partner has given us a coupon code to be used, add details about the coupon code and the structure of the cart page in `public/files/coupon.json`. The structure of the JSON file should have the domain name as the key and a JSON object with 4 elements as the value, containing: a keyword in the URL indicating the cart page as `cartUrlKeyword`, the id of the HTML input tag where the coupon code should be inserted as `couponCodeElementId`, the coupon code itself (ex: SOULSMILE) as `couponCode`, and the name attribute of the HTML submit button on the coupon code form as `submitButtonName`.
+3. If partner has given us a coupon code to be used, add details about the coupon code and the structure of the cart page. The structure should have the domain name as the key and a JSON object with 4 elements as the value, containing: a keyword in the URL indicating the cart page as `cartUrlKeyword`, the id of the HTML input tag where the coupon code should be inserted as `couponCodeElementId`, the coupon code itself (ex: SOULSMILE) as `couponCode`, and the name attribute of the HTML submit button on the coupon code form as `submitButtonName`.
 
 ## Authors
 
