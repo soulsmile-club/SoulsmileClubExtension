@@ -49,7 +49,7 @@ button: {
         firebase.auth().onAuthStateChanged(function(user) {
             console.log("auth state changed");
             if (user) {
-                chrome.storage.sync.set({"uid": user.uid}, function() {
+                chrome.storage.sync.set({'uid': user.uid}, function() {
                     console.log("User uid has been updated");
                 });
                 setName(user.displayName);

@@ -28,7 +28,6 @@
       "https://*.hellobello.com/*",
       "https://*.justmysize.com/*",
       "https://*.livelarq.com/*",
-      "https://*.matethelabel.com/*",
       "https://*.monicaandandy.com/*",
       "https://*.onehanesplace.com/*",
       "https://*.smarternutrition.com/*",
@@ -80,7 +79,19 @@
       "https://*.angelicbakehouse.com/*",
       "https://*.bakedbymelissa.com/*",
       "https://*.drinkhint.com/*",
-      "https://*.earthshoes.com/*"
+      "https://*.earthshoes.com/*",
+      "https://*.drinkbomani.com/*",
+      "https://*.byhumankind.com/*",
+      "https://*.casetify.com/*",
+      "https://*.hugo.coffee/*",
+      "https://*.thelittlemarket.com/*",
+      "https://*.hellotushy.com/*",
+      "https://*.ettitude.com/*",
+      "https://*.hanahlife.com/*",
+      "https://*.peaceoutskincare.com/*",
+      "https://*.sakara.com/*",
+      "https://*.sodastream.com/*",
+      "https://*.noissue.co/*"
     ],
     "css": [
       "boundary/boundary.css",
@@ -105,11 +116,8 @@
     "boundary/boundary-extra.css",
     "bootstrap.min.css",
     "your-stylesheet-for-elements-within-boxes.css",
-    "files/affiliates.json",
     "fonts/*.woff2",
     "fonts/*.woff",
-    "fonts/*.ttf",
-    "files/checkout.json",
-    "files/coupon.json"
+    "fonts/*.ttf"
   ]
 }
