@@ -6,13 +6,13 @@ import "firebase/database";
 import "firebase/firestore";
 
 var firebaseConfig = {
-    apiKey: process.env.REACT_APP_API_KEY,
-    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-    databaseURL: process.env.REACT_APP_DATABASE_URL,
-    projectId: process.env.REACT_APP_PROJECT_ID,
-    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-    appId: process.env.REACT_APP_ID
+    apiKey: "AIzaSyBigQYTouOytX1qhlBmRBIa0g6fHF2_81w",
+    authDomain: "soulsmile-club.firebaseapp.com",
+    databaseURL: "https://soulsmile-club.firebaseio.com",
+    projectId: "soulsmile-club",
+    storageBucket: "soulsmile-club.appspot.com",
+    messagingSenderId: "310904582055",
+    appId: "1:310904582055:web:3d8ee1e910fa9c49221082"
 };
 
 firebase.initializeApp(firebaseConfig);

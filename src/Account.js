@@ -44,7 +44,6 @@ button: {
     const [errorMessage, setErrorMessage] = React.useState('');
     const [existingEmail, setExistingEmail] = React.useState('');
     const [pendingCred, setPendingCred] = React.useState({});
-
     useEffect(() => {
         firebase.auth().onAuthStateChanged(function(user) {
             console.log("auth state changed");
@@ -209,26 +208,39 @@ button: {
     }
 
     function googleLoginPopup () {
-        var provider = new firebase.auth.GoogleAuthProvider();
+        // chrome.identity.getAuthToken({ interactive: true }, function (token) {
+        //     console.log("entered the google login popup");
+        //     var credential = firebase.auth.GoogleAuthProvider.credential(null, token);
+        //     firebase.auth().signInWithCredential(credential);
+        //     setIsLoggedIn(true);
+        // }).catch(handleLoginSignupErrors);
+    var provider = new firebase.auth.GoogleAuthProvider();
 
-        firebase.auth().signInWithPopup(provider).then(function(result) {
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          var token = result.credential.accessToken;
-          // The signed-in user info.
-          var user = result.user;
-          setIsLoggedIn(true);
-      }).catch(handleLoginSignupErrors);
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        setIsLoggedIn(true);
+    }).catch(handleLoginSignupErrors);
   }
 
 
   function facebookLoginPopup() {
+    // chrome.identity.getAuthToken({ interactive: true }, function (token) {
+    //     console.log("entered the facebook login popup");
+    //     console.log(token);
+    //     var credential = firebase.auth.FacebookAuthProvider.credential(null, token);
+    //     firebase.auth().signInWithCredential(credential);
+    //     setIsLoggedIn(true);
+    // }).catch(handleLoginSignupErrors);
     var provider = new firebase.auth.FacebookAuthProvider();
     firebase.auth().signInWithPopup(provider).then(function(result) {
-          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-          var token = result.credential.accessToken;
-          // The signed-in user info.
-          var user = result.user;
-          setIsLoggedIn(true);
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        setIsLoggedIn(true);
       }).catch(handleLoginSignupErrors);
   }
 
