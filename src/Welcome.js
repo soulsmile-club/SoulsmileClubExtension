@@ -67,29 +67,22 @@ function Welcome() {
      * @param strippedURL: domain name of current URL
     */
     function checkIfPartnerSite(strippedUrl) {
-        // gets affiliates JSON file to read and check if contains current domain name
-        const url = chrome.runtime.getURL('files/affiliates.json');
-        fetch(url)
-            .then((response) => response.json())
-            .then((json) => checkAgainstAllPartners(json, strippedUrl));
-    }
-
-    /*
-     * Helper function for checkIfPartnerSite, reads affiliates JSON file and sets isPartnerSite based on results
-     * @param affiliates: affiliates JSON containing mapping from domain name to affiliate link
-     * @param url: current stripped URL (domain name) of page we are on
-    */
-    function checkAgainstAllPartners(affiliates, url) {
-        // otherwise, check if url contains any of the domain name keys in affiliates.json
-        for (var key in affiliates) {
-            if (url.includes(key)) {
-                // if URL has one of the affiliate domain names, set isPartnerSite to true
-                setIsPartnerSite(true);
-                return;
-            }
-        }
-
-        // if no affiliate domain names match, leave isPartnerSite as false
+        // gets affiliates to read and check if contains current domain name
+        var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+        fetch(AIRTABLE_RETAILERS_DOC)
+            .then(res => res.json())
+            .then(res => {
+                const data = res.records;
+                for (var j = 0; j < data.length; j++) {
+                    const domain = data[j]["fields"]["Domain"];
+                    if (domain == strippedUrl) {
+                        // if URL has one of the affiliate domain names, set isPartnerSite to true
+                        setIsPartnerSite(true);
+                        return;
+                    }
+                }
+                // if no affiliate domain names match, leave isPartnerSite as false
+            });
     }
 
     /*
@@ -101,58 +94,65 @@ function Welcome() {
         chrome.tabs.query({'active': true, 'windowId': chrome.windows.WINDOW_ID_CURRENT},
             function(tabs) {
                 // get URL of current tab
-                var url = tabs[0].url;
-                var id = tabs[0].id;
+                var tabId = tabs[0].id;
                 var strippedUrl = stripURL(tabs[0].url);
-                // var key = "lastURLInserted" + strippedUrl;
-                // gets URL from affiliates.json
-                const affiliatesURL = chrome.runtime.getURL('files/affiliates.json');
-                fetch(affiliatesURL)
-                    .then((response) => response.json())
-                    .then((json) => getAffiliateLink(url, id, json));
+                // gets data from retailers airtable
+                var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+                fetch(AIRTABLE_RETAILERS_DOC)
+                    .then(res => res.json())
+                    .then(res => {
+                        const data = res.records;
+                        for (var j = 0; j < data.length; j++) {
+                            const domain = data[j]["fields"]["Domain"];
+                            const keyword = data[j]["fields"]["Keyword"];
+                            const link = data[j]["fields"]["Link"];
+                            const affiliateNetwork = data[j]["fields"]["Affiliate Network"];
+                            const isExtensionAllowed = data[j]["fields"]["Extension Allowed"];
+                            const isDeepLinkingAllowed = data[j]["fields"]["Deep Linking"];
+                            var url = null;
+                            if (domain == strippedUrl && isExtensionAllowed) {
+                                chrome.storage.sync.get(['uid'], function (data) {
+                                    if (data.uid && isDeepLinkingAllowed) {
+                                        console.log(data.uid);
+                                        if (affiliateNetwork == "Refersion") {
+                                            url = new URL(window.location.href);
+                                            url.searchParams.append("subid", data.uid);
+                                        } else if (affiliateNetwork == "Tapfiliate") {
+                                            url = new URL(window.location.href);
+                                            url.searchParams.append("ref", "soulsmileclub");
+                                            url.searchParams.append("tm_uid", data.uid);
+                                        } else if (affiliateNetwork == "Impact") {
+                                            url = new URL(link);
+                                            url.searchParams.append("subid1", data.uid);
+                                        } else if (affiliateNetwork == "Rakuten") {
+                                            var fullLink = link.split("murl=");
+                                            var firstHalfLink = fullLink[0];
+                                            var secondHalfLink = fullLink[1];
+                                            url = new URL(firstHalfLink);
+                                            url.searchParams.append("u1", data.uid);
+                                            url.searchParams.append("murl", decodeURIComponent(secondHalfLink));
+                                        }
+                                    } else { // user is not logged into extension and should use default link
+                                        url = new URL(link);
+                                    }
+                                    // set timestamp for redirection and refreshAffiliate
+                                    var key = "lastURLInserted" + strippedUrl;
+                                    chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
+                                        // redirect to new URL
+                                        setIsActivated(true);
+                                        chrome.tabs.update(tabId, {url: url.toString()});
+                                    });
+                                });
+                            } else if (domain == strippedUrl && !isExtensionAllowed) {
+                                // must redirect to soulsmile website for permission
+                                chrome.tabs.create({url: 'https://www.soulsmile.club/retailers/' + keyword}, function () {
+                                    console.log("created retailer page");
+                                });
+                            }
+                        }
+                    });
             }
         );
-    }
-
-    /* 
-     * Reads affiliates JSON and redirects to the affiliate link of the website we are currently on
-     * @param affiliates: JSON (read from public/affiliates.json) containing mapping of domain names to affiliate links
-    */
-    function getAffiliateLink(url, tabId, affiliates) {
-        var strippedUrl = stripURL(url);
-        if (affiliates[strippedUrl]["extensionAllowed"]) {
-            // extension can redirect to affiliate link
-
-            if (affiliates[strippedUrl]["productPageLinks"]) {
-                // partner site allows us to redirect to affiliate product pages
-
-                // insert query parameter to current URL
-                var url = new URL(url);
-                url.searchParams.append(affiliates[strippedUrl]["queryParameterName"], affiliates[strippedUrl]["queryParameterValue"]);
-
-                // set timestamp for redirection and refreshAffiliate
-                var key = "lastURLInserted" + strippedUrl;
-                chrome.storage.sync.set({[key]: Date.now()}, function() {
-                    // redirect to new URL
-                    setIsActivated(true);
-                    chrome.tabs.update(tabId, {url: url.toString()});
-                });
-            } else {
-                // must redirect to affiliate homepage
-
-                // set timestamp for redirection and refreshAffiliate
-                var key = "lastURLInserted" + strippedUrl;
-                chrome.storage.sync.set({[key]: Date.now()}, function() {
-                    setIsActivated(true);
-                    chrome.tabs.update(tabId, {url: affiliates[strippedUrl]["link"].toString()});
-                });
-            }
-        } else {
-            // must redirect to soulsmile website for permission
-            chrome.tabs.create({url: 'https://www.soulsmile.club/retailers/' + affiliates[strippedUrl]["keyword"]}, function () {
-                console.log("created retailer page");
-            });
-        }
     }
     
     // "earn soulsmiles" button that should show up only if we are on an eligible site that is not currently activated
