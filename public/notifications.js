@@ -1,3 +1,13 @@
+/*
+Importing firebase to get information from users/website
+*/ 
+import firebase from './Firebase.js';
+
+
+
+
+
+
 $(document).ready(function() {
     console.log("document is ready");
     // get current URL domain name
@@ -240,6 +250,151 @@ function createEarningReminder() {
         $('#earningsNotification').remove();
     })
 }
+
+/*
+ * Creates the checkout reminder, pops-up only at check out pages. The (checkIfCheckoutpage) function has been modified to get this to pop up when needed. 
+*/
+function createCheckOutReminder() {
+    // create notification box
+    var earningsNotification = Boundary.createBox("checkoutNotification");
+
+    // add CSS
+    Boundary.loadBoxCSS("#checkoutNotification", chrome.extension.getURL('bootstrap.min.css'));
+    Boundary.loadBoxCSS("#checkoutNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    
+    // add content
+    Boundary.rewriteBox("#checkoutNotfication", `
+    <div class="modal-part2">
+        <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    `);
+    Boundary.appendToBox("#checkoutNotification", `<div id='soulsmile-title'>
+        <h2>soul<span id="smile">smile</span> club</h2>
+    </div>
+    `);  
+
+    Boundary.appendToBox("#checkoutNotification", `
+    <div>
+        <p id='earn-soulsmiles'> Congratulations! You will earn soul<span style="color:#eda1aa">smiles</span> with this purchase. </p> 
+    </div>`);  
+
+    Boundary.appendToBox("#checkoutNotification", `
+    <div> 
+        <p style="color: #444444;" > The exact amount will be reflected in your <a href="https://www.soulsmile.club/login" target="_blank" rel="noopener noreferrer">soul<span style="color:#eda1aa">smiles</span>account</a> shortly. </p> 
+    </div>`);
+
+    // add button functionality
+    Boundary.findElemInBox("#xButton", '#checkoutNotification').click(function() {
+        $('#checkoutNotification').remove();
+    })
+} 
+/* 
+Next is the profile reminder, this should have links/access to the website and provides information from a user's profile. Such as wallet, photo, and their last purchase
+This function is only to create the notification
+*/  
+function createProfileReminder() {
+    // create notification box
+    var earningsNotification = Boundary.createBox("profileNotification");
+
+    // add CSS
+    Boundary.loadBoxCSS("#profileNotification", chrome.extension.getURL('bootstrap.min.css'));
+    Boundary.loadBoxCSS("#profileNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    
+    // add content
+    Boundary.rewriteBox("#profileNotification", `
+    <div class="modal-part2">
+        <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    `);
+    Boundary.appendToBox("#profileNotification", `<div id='soulsmile-title'>
+        <h2>soul<span id="smile">smile</span> club</h2>
+    </div>
+    `); 
+    /*// ADD PROFILE PHOTO HERE
+    Boundary.appendToBox("#reginaNotification", `
+    <div id= "profile.png"> 
+        <img src= "profile.png" alt="profile"/> 
+        <h3 id='wallet'> 187 </h3> 
+    </div>`); 
+
+    //WAllet
+    /*Boundary.appendToBox("#reginaNotification", ` 
+    <div> 
+        <h3 id='wallet'> 187 </h3> 
+    </div>` );  */
+
+    //UnderWALLET */
+    
+    Boundary.appendToBox("#profileNotification", `
+    <div>
+        <p id='congrats'>Congratulations!</p>
+    </div>`);      
+
+    Boundary.appendToBox("#profileNotification", ` 
+    <div> 
+        <p> You have earned soulsmiles from your recent purchase! Would you like to donate your soulsmiles to</p> 
+    </div>`);  
+    Boundary.appendToBox("#profileNotification", ` 
+    <div> 
+        <p id='donateY'> All Soulsmile Causes?</p> 
+    </div>`); 
+
+    Boundary.appendToBox("#profileNotification", `
+    <div>
+        <button type='button' class='btn btn-secondary' id='DonateNowButton'>Donate Now!</button>
+    </div>`);
+    // add button functionality 
+
+    Boundary.findElemInBox("#xButton", '#profileNotification').click(function() {
+        $('#profileNotification').remove(); 
+    
+    })  
+    Boundary.findElemInBox("#DonateNowButton", "#profileNotification").click(function() {
+        $('#profileNotification').remove();
+        window.open('https://www.soulsmile.club/login/'); 
+    });
+}
+
+
+
+
+// I was not able to fork the most recent extension github for some reason, so I will be posting the revised functions here. 
+// Here is the modified checkout function 
+
+function checkIfCheckoutPage() {
+    var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+    fetch(AIRTABLE_RETAILERS_DOC)
+        .then(res => res.json())
+        .then(res => {
+            const data = res.records;
+            for (var j = 0; j < data.length; j++) {
+                const domain = data[j]["fields"]["Domain"];
+                const checkoutPage = data[j]["fields"]["Checkout"];
+                var urlString = window.location.href;
+                var strippedUrl = stripURL(urlString);
+                if (domain == strippedUrl && checkoutPage != "" && urlString.includes(checkoutPage)) {
+                    var key = "checkoutTimestamp" + strippedUrl;
+                    chrome.storage.sync.get([key], function (data) {
+                        // number of minutes for which we should not repeat a checkout notification on a particular site
+                        var checkoutMins = 10;
+                        if (!data[key] || Date.now() - data[key] >= checkoutMins * 60 * 1000) {
+                            // create earning reminder and reset checkoutTimestamp only if there has never been a checkout notification shown or if it was shown >= checkoutMins ago
+                            chrome.storage.sync.set({[key]: Date.now()}, function () {
+                                console.log("New checkout timestamp for " + strippedUrl + " is " + Date.now());
+                                createCheckOutReminder();
+                            });
+                        }
+                    });
+                }
+            }
+        });
+}
+
+
 
 /*
  * Strips full-length URL to just domain name, with no http, www, or parameters (e.g. just girlfriend.com)
