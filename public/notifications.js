@@ -352,10 +352,10 @@ function redirectToAffiliate(strippedUrl) {
                         if (data.uid && isDeepLinkingAllowed) {
                             console.log(data.uid);
                             if (affiliateNetwork == "Refersion") {
-                                url = new URL(window.location.href);
+                                url = new URL(link);
                                 url.searchParams.append("subid", data.uid);
                             } else if (affiliateNetwork == "Tapfiliate") {
-                                url = new URL(window.location.href);
+                                url = new URL(link);
                                 url.searchParams.append("ref", "soulsmileclub");
                                 url.searchParams.append("tm_uid", data.uid);
                             } else if (affiliateNetwork == "Impact") {
