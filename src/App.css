@@ -4,12 +4,63 @@
   text-align: center;
   font-family: 'Montserrat', sans-serif;
   width: 300px;
-  height: 410px;
+  height: 520px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #444444;
+}
+
+#loginOrSignup {
+  color: #eda1aa;
+}
+
+#loginOrSignup:hover {
+  text-decoration: underline;
+}
+ 
+hr {
+  margin-top: 10px;
+  width: 75%;
+  border: none;
+  height: 1px;
+  color: #adadad; /* old IE */
+  background-color: #adadad; /* modern browsers */
+}
+
+.toggle {
+  padding-top: 25px;
+}
+
+.profile-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.profile {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+#name {
+  padding: 0px 10px;
+  text-align: left;
+}
+#header {
+  padding: 0px 5px;
+  text-align: left;
+}
+
+#photo {
+  padding: 0px 10px;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
 }
 
 #soul {
@@ -141,4 +192,27 @@
   100% {
     box-shadow: inset 0px 0px 0px 30px #7ac142;
   }
+}
+
+#error{
+  color: red;
+  padding: 5px 20px;
+  margin: 5px 0px;
+}
+
+#container {
+  overflow: auto;
+  height: 400px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+#outlined-secondary {
+  padding: 9.25px 7px;
+}
+
+#outlined-secondary-label {
+  top: -3px;
 }

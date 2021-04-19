@@ -70,29 +70,28 @@ function handleSoulsmileWebsite() {
  * creating box using Boundary API
 */ 
 function createPermissionNotification() {
-    const url = chrome.runtime.getURL("files/affiliates.json");
-    fetch(url)
-        .then((response) => response.json())
-        .then((json) => createPermissionNotificationOrSoulsmilePopup(json));
-}
-
-
-/* 
- * Helper function for createPermissionNotification
- * Creates notification asking user for permission to start earning soulsmiles on this site by
- * creating box using Boundary API, redirects either to affiliate link or 
-*/
-function createPermissionNotificationOrSoulsmilePopup(affiliates) {
     var strippedUrl = stripURL(window.location.href);
-    console.log(affiliates[strippedUrl]);
-
-    if (affiliates[strippedUrl]["extensionAllowed"]) {
-        // affiliate link redirection is allowed by this retailer
-        showPermissionNotification();
-    } else {
-        // redirection is not allowed, so direct to Soulsmile website, pass in retailer keyword for URL
-        showSoulsmilePopup(affiliates[strippedUrl]["keyword"]);
-    }
+    var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+    fetch(AIRTABLE_RETAILERS_DOC)
+        .then(res => res.json())
+        .then(res => {
+            const data = res.records;
+            for (var j = 0; j < data.length; j++) {
+                const domain = data[j]["fields"]["Domain"];
+                const extensionAllowed = data[j]["fields"]["Extension Allowed"];
+                const keyword = data[j]["fields"]["Keyword"];
+                if (strippedUrl == domain && extensionAllowed) {
+                    // affiliate link redirection is allowed by this retailer
+                    showPermissionNotification();
+                    break;
+                } 
+                if (strippedUrl == domain) {
+                    // redirection is not allowed, so direct to Soulsmile website, pass in retailer keyword for URL
+                    showSoulsmilePopup(keyword);
+                    break;
+                }
+            }
+        });
 }
 
 /*
@@ -258,68 +257,66 @@ function stripURL(urlString) {
 }
 
 /*
- * Reads checkout JSON file to check if current URL is a checkout page (and then display checkout notification if so)
+ * Reads airtable to check if current URL is a checkout page (and then display checkout notification if so)
 */
 function checkIfCheckoutPage() {
-    // gets JSON file (public/checkout.json) containing mapping of domain name to URL keyword indicating it is a checkout page
-    // *** IMPORTANT NOTE: to update with future partner sites, add new site to checkout.json with keyword that URL must contain when reaching the checkout page
-    const url = chrome.runtime.getURL("files/checkout.json");
-    fetch(url)
-        .then((response) => response.json())
-        .then((json) => displayCheckoutNotif(json));
+    var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+    fetch(AIRTABLE_RETAILERS_DOC)
+        .then(res => res.json())
+        .then(res => {
+            const data = res.records;
+            for (var j = 0; j < data.length; j++) {
+                const domain = data[j]["fields"]["Domain"];
+                const checkoutPage = data[j]["fields"]["Checkout"];
+                var urlString = window.location.href;
+                var strippedUrl = stripURL(urlString);
+                if (domain == strippedUrl && checkoutPage != "" && urlString.includes(checkoutPage)) {
+                    var key = "checkoutTimestamp" + strippedUrl;
+                    chrome.storage.sync.get([key], function (data) {
+                        // number of minutes for which we should not repeat a checkout notification on a particular site
+                        var checkoutMins = 10;
+                        if (!data[key] || Date.now() - data[key] >= checkoutMins * 60 * 1000) {
+                            // create earning reminder and reset checkoutTimestamp only if there has never been a checkout notification shown or if it was shown >= checkoutMins ago
+                            chrome.storage.sync.set({[key]: Date.now()}, function () {
+                                console.log("New checkout timestamp for " + strippedUrl + " is " + Date.now());
+                                createEarningReminder();
+                            });
+                        }
+                    });
+                }
+            }
+        });
 }
 
 /*
- * Reads cart JSON file to check if current URL is a cart page (and then insert coupon code if so)
+ * Reads airtable to check if current URL is a cart page (and then insert coupon code if so)
 */
 function checkIfCartPage() {
-    // gets JSON file (public/coupon.json) containing mapping of domain name to URL keyword indicating it is a checkout page, id of coupon code element, and coupon code
-    // *** IMPORTANT NOTE: to update with future partner sites, add new site to coupon.json with keyword that URL must contain when reaching the cart page, id of coupon code element, and coupon code
-    const url = chrome.runtime.getURL("files/coupon.json");
-    fetch(url)
-        .then((response) => response.json())
-        .then((json) => addCouponCode(json));
-}
-
-/* 
- * Helper function for checkIfCheckoutPage, takes JSON of domain names mapped to checkout URL keywords
- * and shows earning reminder notification if current URL is checkout page
-*/
-function displayCheckoutNotif(checkouts) {
-    var urlString = window.location.href;
-    var strippedUrl = stripURL(urlString);
-    if (urlString.includes(checkouts[strippedUrl])) {
-        var key = "checkoutTimestamp" + strippedUrl;
-        chrome.storage.sync.get([key], function (data) {
-            // number of minutes for which we should not repeat a checkout notification on a particular site
-            var checkoutMins = 10;
-            if (!data[key] || Date.now() - data[key] >= checkoutMins * 60 * 1000) {
-                // create earning reminder and reset checkoutTimestamp only if there has never been a checkout notification shown or if it was shown >= checkoutMins ago
-                chrome.storage.sync.set({[key]: Date.now()}, function () {
-                    console.log("New checkout timestamp for " + strippedUrl + " is " + Date.now());
-                    createEarningReminder();
-                });
+    var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+    fetch(AIRTABLE_RETAILERS_DOC)
+        .then(res => res.json())
+        .then(res => {
+            const data = res.records;
+            for (var j = 0; j < data.length; j++) {
+                const domain = data[j]["fields"]["Domain"];
+                const promoCode = data[j]["fields"]["Promo Code"];
+                const promoId = data[j]["fields"]["Promo Id"];
+                const cartKeyword = data[j]["fields"]["Cart Keyword"];
+                const submitId = data[j]["fields"]["Submit Id"];
+                var urlString = window.location.href;
+                var strippedUrl = stripURL(urlString);
+                if (domain == strippedUrl) {
+                    if (cartKeyword != "" && urlString.includes(cartKeyword)) {
+                        // we are on the cart page for this website
+                        // add coupon code to coupon code field
+                        var couponCodeField = document.getElementById(promoId);
+                        couponCodeField.value = promoCode + "\n";
+                        var couponCodeSubmitButton = document.querySelector("button[type=submit][name="+submitId+"]");
+                        couponCodeSubmitButton.click();
+                    }
+                }
             }
         });
-    }
-}
-
-/* 
- * Helper function for checkIfCartPage, takes JSON of domain names mapped to cart URL keywords, coupon code ids, coupon codes, and submit button names
- * and inserts coupon code if current URL is cart page
-*/
-function addCouponCode(coupons) {
-    var urlString = window.location.href;
-    var strippedUrl = stripURL(urlString);
-    // coupons[strippedUrl] contains 4 elements: cart URL keyword, coupon code field id, coupon code, coupon code submit button name
-    if (coupons[strippedUrl] && urlString.includes(coupons[strippedUrl]["cartUrlKeyword"])) {
-        // we are on the cart page for this website
-        // add coupon code to coupon code field
-        var couponCodeField = document.getElementById(coupons[strippedUrl]["couponCodeElementId"]);
-        couponCodeField.value = coupons[strippedUrl]["couponCode"] + "\n";
-        var couponCodeSubmitButton = document.querySelector("button[type=submit][name="+coupons[strippedUrl]["submitButtonName"]+"]");
-        couponCodeSubmitButton.click();
-    }
 }
 
 /* 
@@ -338,42 +335,51 @@ function setNoTimestamp() {
  * to keep track of how long it's been since the last affiliate link redirection for this site
 */
 function redirectToAffiliate(strippedUrl) {
-    // Websites will redirect to affiliate link specified in JSON file (public/affiliates.json)
-    // *** IMPORTANT NOTE: to update with future partner sites, add new site to affiliates.json with affiliate link
-    const url = chrome.runtime.getURL("files/affiliates.json");
-    fetch(url)
-        .then((response) => response.json())
-        .then((json) => getAffiliateLink(json, strippedUrl));
-}
-
-/* 
- * Reads affiliates JSON and redirects to the affiliate link of the website we are currently on
- * @param affiliates: JSON (read from public/affiliates.json) containing mapping of domain names to affiliate links
-*/
-function getAffiliateLink(affiliates, strippedUrl) {
     console.log("get affiliate link");
-    console.log(affiliates[strippedUrl]);
-    if (affiliates[strippedUrl]["productPageLinks"]) {
-        // partner site allows us to redirect to affiliate product pages
-
-        // insert query parameter to current URL
-        var url = new URL(window.location.href);
-        url.searchParams.append(affiliates[strippedUrl]["queryParameterName"], affiliates[strippedUrl]["queryParameterValue"]);
-
-        // set timestamp for redirection and refreshAffiliate
-        var key = "lastURLInserted" + strippedUrl;
-        chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
-            // redirect to new URL
-            window.location.href = url;
+    var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+    fetch(AIRTABLE_RETAILERS_DOC)
+        .then(res => res.json())
+        .then(res => {
+            const data = res.records;
+            for (var j = 0; j < data.length; j++) {
+                const domain = data[j]["fields"]["Domain"];
+                const link = data[j]["fields"]["Link"];
+                const affiliateNetwork = data[j]["fields"]["Affiliate Network"];
+                const isDeepLinkingAllowed = data[j]["fields"]["Deep Linking"];
+                var url = null;
+                if (domain == strippedUrl) {
+                    chrome.storage.sync.get(['uid'], function (data) {
+                        if (data.uid && isDeepLinkingAllowed) {
+                            console.log(data.uid);
+                            if (affiliateNetwork == "Refersion") {
+                                url = new URL(link);
+                                url.searchParams.append("subid", data.uid);
+                            } else if (affiliateNetwork == "Tapfiliate") {
+                                url = new URL(link);
+                                url.searchParams.append("ref", "soulsmileclub");
+                                url.searchParams.append("tm_uid", data.uid);
+                            } else if (affiliateNetwork == "Impact") {
+                                url = new URL(link);
+                                url.searchParams.append("subid1", data.uid);
+                            } else if (affiliateNetwork == "Rakuten") {
+                                var fullLink = link.split("murl=");
+                                var firstHalfLink = fullLink[0];
+                                var secondHalfLink = fullLink[1];
+                                url = new URL(firstHalfLink);
+                                url.searchParams.append("u1", data.uid);
+                                url.searchParams.append("murl", decodeURIComponent(secondHalfLink));
+                            }
+                        } else { // user is not logged into extension and should use default link
+                            url = new URL(link);
+                        }
+                        // set timestamp for redirection and refreshAffiliate
+                        var key = "lastURLInserted" + strippedUrl;
+                        chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
+                            // redirect to new URL
+                            window.location.href = url;
+                        });
+                    });
+                }
+            }
         });
-    } else {
-        // must redirect to affiliate homepage
-        
-        // set timestamp for redirection and refreshAffiliate
-        var key = "lastURLInserted" + strippedUrl;
-        chrome.storage.sync.set({[key]: Date.now(), refreshAffiliate: true}, function() {
-            // redirect to new URL
-            window.location.href = affiliates[strippedUrl]["link"];
-        });
-    }
 }
