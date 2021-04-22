@@ -1,31 +1,4 @@
-'use strict'; 
-import firebase from '../src/Firebase.js'; 
-
-
-
-const applicationState = { values: [] };
-
-// writes the changes to Chrome Storage
-function updateState(applicationState) {
-  chrome.storage.local.set({ state: JSON.stringify(applicationState) });
-}
-
-
-// this was taken from the account.js 
-function getSoulsmiles(user) {
-        console.log("get soulsmiles earned");
-        firebase.database().ref('users/' + user.uid).once("value", snapshot => {
-            if (snapshot.exists()) {
-                console.log("get soulsmiles earned: user exists");
-		applicationState.values[soulsmilesInWallet] = snapshot.val().soulsmilesInWallet;
-                updateState(applicationState);
-		console.log(snapshot.val().soulsmilesInWallet);
-            } else {
-                console.log("get soulsmiles earned: user does not exist");
-            }
-        });
-  }
-
+'use strict';
 
 chrome.runtime.onInstalled.addListener(function(details) {
 	// creates new tab with extension instructions when browser extension is first installed
@@ -38,17 +11,12 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		// can add update notification for user when we make major changes (e.g. adding account/giving history)
 	}
     console.log("updating to version " + details.version);
-    chrome.runtime.reload();
-}); 
-
-
-
-
-
+});
 
 chrome.runtime.requestUpdateCheck(function(status) {
     if (status == "update_available") {
         console.log("update pending...");
+        chrome.runtime.reload();
     } else if (status == "no_update") {
         console.log("no update found");
     } else if (status == "throttled") {
