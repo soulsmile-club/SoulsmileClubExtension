@@ -1,11 +1,14 @@
 $(document).ready(function() {
     console.log("document is ready");
     console.log(chrome.storage.sync.get("uid", function (data) {
-        console.log(data);
+        console.log(data.uid);
     }));
     // get current URL domain name
     var strippedUrl = stripURL(window.location.href);
     console.log("current URL: " + strippedUrl);
+    console.log(chrome.storage.sync.get("soulsmilesInWallet", function (data) {
+        console.log(data.soulsmilesInWallet);
+    }));
 
     if (strippedUrl === "soulsmile.club") {
         handleSoulsmileWebsite();
@@ -431,31 +434,13 @@ function DelayProfile() {
 // THIS FUNCTION IS SUPPOSED TO FETCH SOULSMILEINWALLET AMOUNT FROM FIREBASE
 /* 
 Functions that deal with firebase and account.js in order to get user information, specifcally the wallet amount.
-*/                                                              
-const applicationState = { values: [] };
-// updateState is a function that writes the changes to Chrome Storage
-function updateState(applicationState) {
-  chrome.storage.local.set({ state: JSON.stringify(applicationState) });
+*/                                                             
+
+function getWalletAmount() {
+    chrome.storage.sync.get('soulsmilesInWallet', function(data) {
+        return data.soulsmilesInWallet;
+    });
 }
-
-function getWalletAmount(user) {
-        console.log("get soulsmiles earned");
-        firebase.database().ref('users/' + user.uid).once("value", snapshot => {
-            if (snapshot.exists()) {
-                console.log("get soulsmiles earned: user exists");
-				applicationState.values[soulsmilesInWallet] = snapshot.val().soulsmilesInWallet;
-                updateState(applicationState);
-				console.log(snapshot.val().soulsmilesInWallet);
-            } else {
-                console.log("get soulsmiles earned: user does not exist");
-            }
-        });
-  }
-
-
-
-
-
 
 
 

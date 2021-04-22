@@ -45,6 +45,8 @@ firebase.auth().onAuthStateChanged(function(user) {
         console.log(user.uid);
         console.log(user.displayName);
         console.log(user.email);
+        getWalletAmount(user);
+
     } else {
         chrome.storage.sync.set({'uid': ""}, function() {
             console.log("User uid has been updated");
@@ -52,3 +54,24 @@ firebase.auth().onAuthStateChanged(function(user) {
         console.log('no user found');
     }
 });
+
+function getWalletAmount(user) {
+        console.log("get soulsmiles earned");
+        firebase.database().ref('users/' + user.uid).once("value", snapshot => {
+            if (snapshot.exists()) {
+                console.log("get soulsmiles earned: user exists");
+                chrome.storage.sync.set({'soulsmilesInWallet': snapshot.val().soulsmilesInWallet}, function() {
+                    console.log("User's soulsmiles have been updated");
+                });
+                console.log(snapshot.val().soulsmilesInWallet);
+            } else {
+                chrome.storage.sync.set({'soulsmilesInWallet': 0}, function() {
+                    console.log("User's soulsmiles have been updated");
+                });
+                console.log("get soulsmiles earned: user does not exist");
+            }
+        });
+  }
+
+
+
