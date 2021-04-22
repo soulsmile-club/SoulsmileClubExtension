@@ -24,16 +24,31 @@ chrome.runtime.requestUpdateCheck(function(status) {
     }
 });
 
-chrome.identity.getAuthToken({ interactive: true }, function (token) {
-	console.log("get auth token entered");
-    if (chrome.runtime.lastError) {
-        alert(chrome.runtime.lastError.message);
-        return;
+var firebaseConfig = {
+    apiKey: "AIzaSyBigQYTouOytX1qhlBmRBIa0g6fHF2_81w",
+    authDomain: "soulsmile-club.firebaseapp.com",
+    databaseURL: "https://soulsmile-club.firebaseio.com",
+    projectId: "soulsmile-club",
+    storageBucket: "soulsmile-club.appspot.com",
+    messagingSenderId: "310904582055",
+    appId: "1:310904582055:web:3d8ee1e910fa9c49221082"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+firebase.auth().onAuthStateChanged(function(user) {
+    console.log("auth state changed");
+    if (user) {
+        chrome.storage.sync.set({'uid': user.uid}, function() {
+            console.log("User uid has been updated");
+        });
+        console.log(user.uid);
+        console.log(user.displayName);
+        console.log(user.email);
+    } else {
+        chrome.storage.sync.set({'uid': ""}, function() {
+            console.log("User uid has been updated");
+        });
+        console.log('no user found');
     }
-    var x = new XMLHttpRequest();
-    x.open('GET', 'https://www.googleapis.com/oauth2/v2/userinfo?alt=json&access_token=' + token);
-    x.onload = function() {
-        console.log("Succeeded");
-    };
-    x.send();
 });

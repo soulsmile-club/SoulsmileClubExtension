@@ -1,9 +1,8 @@
-import 'account.js'; 
-import firebase from 'Firebase.js';
-// The importing above is giving me errors,but I still need to import.
-
 $(document).ready(function() {
     console.log("document is ready");
+    console.log(chrome.storage.sync.get("uid", function (data) {
+        console.log(data);
+    }));
     // get current URL domain name
     var strippedUrl = stripURL(window.location.href);
     console.log("current URL: " + strippedUrl);
@@ -67,7 +66,7 @@ function handleSoulsmileWebsite() {
                 redirectToAffiliate($("#strippedUrl").html());
             });
         } else {
-            console.log("does not exist");
+            // console.log("does not exist");
         }
     });
 }
