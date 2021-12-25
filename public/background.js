@@ -24,16 +24,54 @@ chrome.runtime.requestUpdateCheck(function(status) {
     }
 });
 
-chrome.identity.getAuthToken({ interactive: true }, function (token) {
-	console.log("get auth token entered");
-    if (chrome.runtime.lastError) {
-        alert(chrome.runtime.lastError.message);
-        return;
+var firebaseConfig = {
+    apiKey: "AIzaSyBigQYTouOytX1qhlBmRBIa0g6fHF2_81w",
+    authDomain: "soulsmile-club.firebaseapp.com",
+    databaseURL: "https://soulsmile-club.firebaseio.com",
+    projectId: "soulsmile-club",
+    storageBucket: "soulsmile-club.appspot.com",
+    messagingSenderId: "310904582055",
+    appId: "1:310904582055:web:3d8ee1e910fa9c49221082"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+firebase.auth().onAuthStateChanged(function(user) {
+    console.log("auth state changed");
+    if (user) {
+        chrome.storage.sync.set({'uid': user.uid}, function() {
+            console.log("User uid has been updated");
+        });
+        console.log(user.uid);
+        console.log(user.displayName);
+        console.log(user.email);
+        getWalletAmount(user);
+
+    } else {
+        chrome.storage.sync.set({'uid': ""}, function() {
+            console.log("User uid has been updated");
+        });
+        console.log('no user found');
     }
-    var x = new XMLHttpRequest();
-    x.open('GET', 'https://www.googleapis.com/oauth2/v2/userinfo?alt=json&access_token=' + token);
-    x.onload = function() {
-        console.log("Succeeded");
-    };
-    x.send();
 });
+
+function getWalletAmount(user) {
+        console.log("get soulsmiles earned");
+        firebase.database().ref('users/' + user.uid).once("value", snapshot => {
+            if (snapshot.exists()) {
+                console.log("get soulsmiles earned: user exists");
+                chrome.storage.sync.set({'soulsmilesInWallet': snapshot.val().soulsmilesInWallet}, function() {
+                    console.log("User's soulsmiles have been updated");
+                });
+                console.log(snapshot.val().soulsmilesInWallet);
+            } else {
+                chrome.storage.sync.set({'soulsmilesInWallet': 0}, function() {
+                    console.log("User's soulsmiles have been updated");
+                });
+                console.log("get soulsmiles earned: user does not exist");
+            }
+        });
+  }
+
+
+

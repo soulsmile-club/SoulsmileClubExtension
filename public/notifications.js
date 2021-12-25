@@ -1,8 +1,14 @@
 $(document).ready(function() {
     console.log("document is ready");
+    console.log(chrome.storage.sync.get("uid", function (data) {
+        console.log(data.uid);
+    }));
     // get current URL domain name
     var strippedUrl = stripURL(window.location.href);
     console.log("current URL: " + strippedUrl);
+    console.log(chrome.storage.sync.get("soulsmilesInWallet", function (data) {
+        console.log(data.soulsmilesInWallet);
+    }));
 
     if (strippedUrl === "soulsmile.club") {
         handleSoulsmileWebsite();
@@ -21,7 +27,8 @@ $(document).ready(function() {
             if (data.refreshAffiliate) {
                 // User just clicked got redirected through affiliate link -- show earning reminder
                 chrome.storage.sync.set({refreshAffiliate: false}, function() {
-                    createEarningReminder();
+                    createEarningReminder(); 
+                    
                 });
             }
 
@@ -41,10 +48,12 @@ $(document).ready(function() {
                 showPermissionNotification();
             } else {
                 // User is earning soulsmiles on this site, no need to refresh, just check for checkout page
-                console.log("already earning");
+                console.log("already earning"); 
                 checkIfCheckoutPage();
-                checkIfCartPage();
-            }
+                checkIfCartPage();  
+                DelayProfile();
+            } 
+            
         });
     }
 });
@@ -60,7 +69,7 @@ function handleSoulsmileWebsite() {
                 redirectToAffiliate($("#strippedUrl").html());
             });
         } else {
-            console.log("does not exist");
+            // console.log("does not exist");
         }
     });
 }
@@ -256,6 +265,185 @@ function stripURL(urlString) {
     return splitUrl[splitUrl.length-2] + "." + splitUrl[splitUrl.length-1];
 }
 
+
+
+/*
+ * Creates notification that reminds users at the checkout that they can earn soulsmiles with this purchase, and that it will be shown in their wallet soon.
+*/
+function createCheckOutReminder() {
+    // create notification box
+    var earningsNotification = Boundary.createBox("checkoutNotification");
+
+    // add CSS
+    Boundary.loadBoxCSS("#checkoutNotification", chrome.extension.getURL('bootstrap.min.css'));
+    Boundary.loadBoxCSS("#checkoutNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    
+    // add content
+    Boundary.rewriteBox("#checkoutNotfication", `
+    <div class="modal-part2">
+        <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    `);
+    Boundary.appendToBox("#checkoutNotification", `<div id='soulsmile-title'>
+        <h2>soul<span id="smile">smile</span> club</h2>
+    </div>
+    `);  
+
+    Boundary.appendToBox("#checkoutNotification", `
+    <div>
+        <p id='earn-soulsmiles'> Congratulations! You will earn soul<span style="color:#eda1aa">smiles</span> with this purchase. </p> 
+    </div>`);  
+
+    Boundary.appendToBox("#checkoutNotification", `
+    <div> 
+        <p style="color: #444444;" > The exact amount will be reflected in your <a href="https://www.soulsmile.club/login" target="_blank" rel="noopener noreferrer">soul<span style="color:#eda1aa">smiles</span>account</a> shortly. </p> 
+    </div>`);
+
+    
+    
+    // add button functionality
+    Boundary.findElemInBox("#xButton", '#checkoutNotification').click(function() {
+        $('#checkoutNotification').remove();
+    })
+} 
+
+
+
+
+//PROFILE POPUP
+/* ########################### 3 functions for profile reminder popup  
+ First one (checkIfHomePage) ensures that it only pops up on homepage, showing up agian only after 2 minutes, this will be changed to 7 days 
+ Second one is to create the profile reminder and show its elements and make it into a physical thing
+ Third function is to delay the function for a couple of seconds. 
+ There will proably be more functions to ensure the profile picture and wallet amount show as well.*/
+
+
+ /*
+ * Creates profile popup, this will be a notification that shows at the homepage after a couple of seconds.
+ * It will let you know that you have soulsmiles in your wallet and you can donate them now
+*/
+function createProfileReminder() {
+    // create notification box
+    var earningsNotification = Boundary.createBox("profileNotification");
+
+    // add CSS
+    Boundary.loadBoxCSS("#profileNotification", chrome.extension.getURL('bootstrap.min.css'));
+    Boundary.loadBoxCSS("#profileNotification", chrome.extension.getURL('your-stylesheet-for-elements-within-boxes.css'));
+    
+    // add content
+    Boundary.rewriteBox("#profileNotification", `
+    <div class="modal-part2">
+        <button type="button" id="xButton" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    `);
+    Boundary.appendToBox("#profileNotification", `<div id='soulsmile-title'>
+        <h2>soul<span id="smile">smile</span> club</h2>
+    </div>
+    `);  
+
+    //###################Firebase stuff 
+    Boundary.appendToBox("#profileNotification", ` 
+    <div> 
+        <p> Soul smiles in wallet is:  <span id="soulsmilesInWallet"></span> </p>
+    </div>`);  
+    
+
+    Boundary.appendToBox("#profileNotification", `
+    <div>
+        <p id='congrats'>Congratulations!</p>
+    </div>`);  
+    
+
+    Boundary.appendToBox("#profileNotification", ` 
+    <div> 
+        <p> You have earned soulsmiles from your recent purchase! Would you like to donate your soulsmiles to</p> 
+    </div>`);  
+    Boundary.appendToBox("#profileNotification", ` 
+    <div> 
+        <p id='donateY'> All Soulsmile Causes?</p> 
+    </div>`); 
+
+    Boundary.appendToBox("#profileNotification", `
+    <div>
+        <button type='button' class='btn btn-secondary' id='DonateNowButton'>Donate Now!</button>
+    </div>`);
+
+
+
+    // add button functionality 
+
+    Boundary.findElemInBox("#xButton", '#profileNotification').click(function() {
+        $('#profileNotification').remove(); 
+    
+    })  
+    Boundary.findElemInBox("#DonateNowButton", "#profileNotification").click(function() {
+        $('#profileNotification').remove();
+        window.open('https://www.soulsmile.club/login/'); //##############HERE I ADDED THE FUNCTION RIGHT HERE !!
+    });
+}
+
+
+ 
+
+ /*
+ * Similar to checkIfCheckout function, except this one looks for the homepage.
+ * This allows for the profile reminder to only show if they are earning soulsmiles and the popup hasn't shown already in general or past a certain time.
+*/
+
+function checkIfHomePage() {
+    var AIRTABLE_RETAILERS_DOC = 'https://api.airtable.com/v0/app6kGp5x2cQ2Bfrs/Retailers?api_key=keySwjNfgz4FoST54';
+    fetch(AIRTABLE_RETAILERS_DOC)
+        .then(res => res.json())
+        .then(res => {
+            const data = res.records;
+            for (var j = 0; j < data.length; j++) {
+                const domain = data[j]["fields"]["Domain"];
+                var urlString = window.location.href;
+                var strippedUrl = stripURL(urlString);
+                if (domain == strippedUrl) {
+                    var key = "HomeTimestamp" + strippedUrl;
+                    chrome.storage.sync.get([key], function (data) {
+                        // number of minutes for which we should not repeat a home notification on a particular site
+                        var HomeMins = 10;
+                        if (!data[key] || Date.now() - data[key] >= HomeMins * 60 * 1000) {
+                            // create profile reminder and reset HomeTimestamp only if there has never been a checkout notification shown or if it was shown >= HomeMins ago
+                            chrome.storage.sync.set({[key]: Date.now()}, function () {
+                                console.log("New Home timestamp for " + strippedUrl + " is " + Date.now());
+                                createProfileReminder();
+                            });
+                        }
+                    });
+                }
+            }
+        });
+}
+
+
+/* Now this will be the function that will delay the checkout function for a couple of seconds, just so it doesn't cover up the earnings notification. 
+*/
+function DelayProfile() { 
+    setTimeout(checkIfHomePage, 30000);
+}
+
+
+
+// THIS FUNCTION IS SUPPOSED TO FETCH SOULSMILEINWALLET AMOUNT FROM FIREBASE
+/* 
+Functions that deal with firebase and account.js in order to get user information, specifcally the wallet amount.
+*/                                                             
+
+function getWalletAmount() {
+    chrome.storage.sync.get('soulsmilesInWallet', function(data) {
+        return data.soulsmilesInWallet;
+    });
+}
+
+
+
 /*
  * Reads airtable to check if current URL is a checkout page (and then display checkout notification if so)
 */
@@ -279,7 +467,7 @@ function checkIfCheckoutPage() {
                             // create earning reminder and reset checkoutTimestamp only if there has never been a checkout notification shown or if it was shown >= checkoutMins ago
                             chrome.storage.sync.set({[key]: Date.now()}, function () {
                                 console.log("New checkout timestamp for " + strippedUrl + " is " + Date.now());
-                                createEarningReminder();
+                                createCheckOutReminder();
                             });
                         }
                     });
@@ -382,4 +570,4 @@ function redirectToAffiliate(strippedUrl) {
                 }
             }
         });
-}
+} 

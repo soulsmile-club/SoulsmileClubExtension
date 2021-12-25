@@ -44,7 +44,7 @@
   },
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAg32Y91fHhSocjweDMB0nEadz6d75fzDrYaANmW2WAU2pX0voPA3+tI0RqqufpasUQaCTuw+9Tbpyu/QLFt7z6h1A0kSig+X7cMKsDwMKOy/9ono6GPD3I1AYr9OMCPYteq2Sp1B/yGXXiefjoEYXtSIck/IfPeYSCKm/AUGb1dwA8a9FHuCSSAMpbcDebW2MrkVfewuEWaNu/sdttdLJ9/WUbZ0PkE5xt5XXn3oxXjZsZ96JhmS7Gf+1YOa+VwDcsQBEm5PMdsAIbS1K6FMl7UrmZTtF8kMdS2mvHlObmOyIAYoEZIKGcxm1Pg9Go/zKaRRBUW+ouSKqpLMqEjDLpwIDAQAB",
   "content_security_policy": "script-src 'self' 'sha256-ypW0wr1e+CGRr7YiTWwceJUjgoz6vEZ8WUfw8wlh4es=' https://www.googleapis.com https://apis.google.com https://www.gstatic.com/ https://*.firebaseio.com; object-src 'self'",
-  "permissions": ["tabs", "storage", "identity"],
+  "permissions": ["tabs", "storage", "identity", "https://www.gstatic.com/firebasejs/5.3.0/firebase.js"],
   "web_accessible_resources": [
     "boundary/boundary-extra.css",
     "bootstrap.min.css",
