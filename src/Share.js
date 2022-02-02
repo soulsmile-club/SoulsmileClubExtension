@@ -48,7 +48,7 @@ function Share() {
 	    	<div id="learnMore">
 	    		<div>Learn more: <a href="https://www.soulsmile.club" target="_blank" rel="noopener noreferrer">www.soulsmile.club</a></div>
 	    		<div>Give us feedback: <a href="https://tiny.cc/soulsmile-feedback" target="_blank" rel="noopener noreferrer">tiny.cc/soulsmile-feedback</a></div>
-	    		<div><a href="https://www.soulsmile.club/blog/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></div>
+	    		<div><a href="https://www.soulsmile.club/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></div>
 	    	</div>
 	    </>
     );
